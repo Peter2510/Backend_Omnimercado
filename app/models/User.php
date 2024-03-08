@@ -2,35 +2,28 @@
 
 namespace App\Models;
 
-class User extends Model
-{
-    /**
-     * The attributes that are mass assignable.
-     * @var array
-     */
+class User extends Model{
+    protected $table = 'usuario';
+
+    // Definición de atributos de la tabla
     protected $fillable = [
-        'fullname', 'email', 'password',
+        'id_usuario',
+        'nombre',                         
+        'correo',
+        'fecha_nacimiento',
+        'contrasenia',
+        'moneda_local_gastada',
+        'moneda_local_ganada',
+        'cantidad_moneda_virtual',
+        'moneda_virtual_ganada',
+        'moneda_virtual_gastada',
+        'cantidad_publicaciones_productos',
+        'cantidad_publicaciones_voluntariados',
+        'promedio_valoracion',
+        'activo_publicar',
+        'activo_plataforma', 
+        'url_imagen'
     ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     * @var array
-     */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
-
-    /**
-     * Indicates if the model should be timestamped.
-     * @var bool
-     */
-    public $timestamps = true;
-
-    /**
-     * The attributes that should be cast to native types.
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    
 }
+

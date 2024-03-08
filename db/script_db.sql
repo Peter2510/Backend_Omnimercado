@@ -42,7 +42,8 @@ CREATE TABLE usuario(
     cantidad_publicaciones_productos INT NOT NULL,
     cantidad_publicaciones_voluntariados INT NOT NULL,
     promedio_valoracion DECIMAL(3,1)NOT NULL,
-    activo TINYINT(1) NOT NULL,
+    activo_publicar TINYINT(1) NOT NULL,
+    activo_plataforma TINYINT(1) NOT NULL,
     url_imagen TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
@@ -271,14 +272,25 @@ CREATE TABLE reporte_voluntariado_especial(
 );
 
 
-INSERT INTO rol(nombre) VALUES ('admin');
+INSERT INTO rol(nombre,created_at,updated_at) VALUES ('admin','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
-INSERT INTO tipo_condicion(nombre) VALUES 
-('Nuevo'),
-('Usado');
+INSERT INTO tipo_condicion(nombre,created_at,updated_at) VALUES 
+('Nuevo','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Usado','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
-INSERT INTO estado_producto(nombre) values
-('Disponible'),
-('Vendido');
+INSERT INTO estado_producto(nombre,created_at,updated_at) values
+('Disponible','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Vendido','2024-03-08 07:15:30','2024-03-08 07:15:30');
+
+
+INSERT INTO usuario (nombre,correo,fecha_nacimiento,contrasenia,moneda_local_gastada,moneda_local_ganada,cantidad_moneda_virtual,moneda_virtual_ganada,moneda_virtual_gastada,cantidad_publicaciones_productos,cantidad_publicaciones_voluntariados,promedio_valoracion,activo_publicar,activo_plataforma,url_imagen,created_at,updated_at) VALUES
+	 ('Pedro','c1@correo.com','2000-01-01',0x24327924313024393367376F4268696C6D716561593373396F4A4A496537374A6541656631503369575935724472754844704B4D5479636C4D343632,0.00,0.00,5.00,0.00,0.00,0,0,0.0,0,1,'usuario.png','2024-03-08 07:15:30','2024-03-08 07:15:30');
+
+INSERT INTO administrativo(nombre,correo,rol,url_imagen,activo,created_at,updated_at,contrasenia) values 
+('Ricardo','c2@correo.com',1,'admin.png',1,'2024-03-08 07:15:30','2024-03-08 07:15:30',0x24327924313024393367376F4268696C6D716561593373396F4A4A496537374A6541656631503369575935724472754844704B4D5479636C4D343632);
+
+
+
+
 
 

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class Administrativo extends Model{
+class Admin extends Model{
     protected $table = 'administrativo';
 
     // Definición de atributos de la tabla
@@ -12,6 +12,7 @@ class Administrativo extends Model{
         'correo',         
         'contrasenia',
         'rol',
+        'activo',
         'url_imagen'
     ];
     

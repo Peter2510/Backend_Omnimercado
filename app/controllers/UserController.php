@@ -1,14 +1,14 @@
 <?php
 
 namespace App\Controllers;
-use App\Models\Usuario;
+use App\Models\User;
 
-class UsuarioController extends Controller{
+class UserController extends Controller{
 
-    function crearUsuario() {
+    function createUser() {
         
         try {
-            $usuario = new Usuario;
+            $usuario = new User;
             $usuario->nombre = app()->request()->get('name');
             $usuario->correo = app()->request()->get('email');
             $usuario->fecha_nacimiento = app()->request()->get('birthYear');
@@ -21,7 +21,8 @@ class UsuarioController extends Controller{
             $usuario->cantidad_publicaciones_productos = 0;
             $usuario->cantidad_publicaciones_voluntariados = 0;
             $usuario->promedio_valoracion = 0;
-            $usuario->activo = 0;
+            $usuario->activo_publicar = 0;
+            $usuario->activo_plataforma = 1;
             $usuario->url_imagen = 'usuario.png';
 
             $usuario->save();
@@ -29,8 +30,8 @@ class UsuarioController extends Controller{
             return response()->json(['status' => 'success', 'message' => 'Usuario creado exitosamente'], 200);
 
         } catch (\Exception $e) {
-            echo $e;
             return response()->json(['status' => 'error', 'message' => 'Error al crear el usuario'], 500);
+
         }
         
     }

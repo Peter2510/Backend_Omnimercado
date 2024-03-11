@@ -29,7 +29,8 @@
         "leafs/cors": "*",
         "leafs/auth": "*",
         "leafs/db": "*",
-        "firebase/php-jwt": "^6.10"
+        "firebase/php-jwt": "^6.10",
+        "leafs/fs": "^1.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.16"

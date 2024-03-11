@@ -4,11 +4,28 @@ namespace App\Controllers;
 
 use App\Models\User;
 use App\Models\Admin;
+use App\Models\Gender;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Leaf\FS;
 
 class Admin_UserController extends Controller
 {
+
+
+    function getGenders(){
+
+        try {
+            
+            $genders = Gender::all();
+            return response()->json(['status' => 'success', 'genders' => $genders], 200);
+            
+
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los generos'], 500);
+        }
+        
+    }
 
     function validateEmail()
     {
@@ -121,4 +138,30 @@ class Admin_UserController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error al validar login'], 500);
         }
     }
+
+    function uploadImage() {
+
+  
+        try {
+            // // Obtener el archivo de la solicitud
+        $imagen =  app()->request()->files("file_to_upload");
+            
+        // // Generar un nombre único para la imagen
+        FS::uploadFile($imagen, "./images/");
+        } catch (\Throwable $th) {
+            echo $th;
+        }
+        
+        
+    
+        
+        
+
+
+    
+        
+    }
+    
+
 }
+

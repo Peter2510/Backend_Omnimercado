@@ -13,7 +13,8 @@ class Admin extends Model{
         'contrasenia',
         'rol',
         'activo',
-        'url_imagen'
+        'url_imagen',
+        'genero'
     ];
     
 }

@@ -22,7 +22,8 @@ class User extends Model{
         'promedio_valoracion',
         'activo_publicar',
         'activo_plataforma', 
-        'url_imagen'
+        'url_imagen',
+        'genero'
     ];
     
 }

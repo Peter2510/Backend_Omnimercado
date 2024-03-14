@@ -13,18 +13,16 @@ class Admin_UserController extends Controller
 {
 
 
-    function getGenders(){
+    function getGenders()
+    {
 
         try {
-            
+
             $genders = Gender::all();
             return response()->json(['status' => 'success', 'genders' => $genders], 200);
-            
-
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Error al obtener los generos'], 500);
         }
-        
     }
 
     function validateEmail()
@@ -50,6 +48,31 @@ class Admin_UserController extends Controller
         }
     }
 
+    function profile_image($url_image){
+
+        $pathImage = 'images/' . $url_image;
+
+        if (file_exists($pathImage)) {
+            $imageData = file_get_contents($pathImage);
+
+            $image_data_json = [
+                'type' => FS::extension($pathImage),
+                'image' => base64_encode($imageData)
+            ];
+
+            return $image_data_json;
+        } else {
+
+            $pathDefaultImage = 'images/' . _env('DEFAULT_NAME_PHOTO_USER')."."._env('DEFAULT_TYPE_PHOTO_USER');
+            $imageData = file_get_contents($pathDefaultImage);
+            $image_data_json = [
+                'type' => FS::extension($pathDefaultImage),
+                'image' => base64_encode($imageData)
+            ];
+
+            return $image_data_json;
+        }
+    }
     function login()
     {
         try {
@@ -67,7 +90,8 @@ class Admin_UserController extends Controller
             if ($user) {
                 if (password_verify($password, $user->contrasenia)) {
                     $user->makeHidden(['contrasenia']);
-                    return response()->json(['status' => 'success',  'user' => $user], 200);
+                    $profile_image = $this->profile_image($user->url_imagen);
+                    return response()->json(['status' => 'success',  'user' => $user,'profile_image'=>$profile_image], 200);
                 }
             } else {
                 $admin = Admin::select('id_administrativo', 'contrasenia', 'nombre', 'rol', 'url_imagen', 'activo')
@@ -76,13 +100,15 @@ class Admin_UserController extends Controller
                 if ($admin) {
                     if (password_verify($password, $admin->contrasenia)) {
                         $admin->makeHidden(['contrasenia']);
-                        return response()->json(['status' => 'success',  'admin' => $admin], 200);
+                        $profile_image = $this->profile_image($admin->url_imagen);
+                        return response()->json(['status' => 'success',  'admin' => $admin,'profile_image'=>$profile_image], 200);
                     }
                 }
             }
 
             return response()->json(['status' => 'error', 'message' => 'Credenciales incorrectas'], 401);
         } catch (\Exception $e) {
+            echo $e;
             return response()->json(['status' => 'error', 'message' => 'Error al validar login'], 500);
         }
     }
@@ -139,29 +165,6 @@ class Admin_UserController extends Controller
         }
     }
 
-    function uploadImage() {
-
-  
-        try {
-            // // Obtener el archivo de la solicitud
-        $imagen =  app()->request()->files("file_to_upload");
-            
-        // // Generar un nombre único para la imagen
-        FS::uploadFile($imagen, "./images/");
-        } catch (\Throwable $th) {
-            echo $th;
-        }
-        
-        
-    
-        
-        
-
-
-    
-        
-    }
-    
-
 }
+
 

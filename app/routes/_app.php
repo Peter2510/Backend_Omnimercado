@@ -10,10 +10,11 @@ app()->post('/validar-correo', 'Admin_UserController@validateEmail');
 app()->post('/validar-credenciales-login','Admin_UserController@login');
 //app()->post('/upload','Admin_UserController@uploadImage');
 //app()->post('/jwt','Admin_UserController@auth');
+app()->get('/ver-imagen','Admin_UserController@response_image');
 
 
 /** USUARIO */
-app()->post('/crear-usuario','UserController@createUser()');
+app()->post('/crear-usuario','UserController@createUser');
 
 /** ADMINISTRATIVO */
 app()->post('/crear-admin','AdminController@createAdmin');

@@ -25,21 +25,24 @@ class UserController extends Controller{
             $user->promedio_valoracion = 0;
             $user->activo_publicar = 0;
             $user->activo_plataforma = _env('ACTIVE_USER_DEFAULT');
-                                 
-            if(app()->request()->files("photo")['size']>0){
+            
+            $file = app()->request()->files("photo");
+            
+            if($file!=null){
                  $image = app()->request()->files("photo");
                  $type = explode("/", $image['type']);
                  $image['name'] = app()->request()->get('email') . "." . $type[1];
                  $user->url_imagen = $image['name'];
                 FS::uploadFile($image, "./images/");
             }else{
-                 $user->url_imagen = _env('DEFAULT_NAME_PHOTO_USER');
+                 $user->url_imagen = _env('DEFAULT_NAME_PHOTO_USER')."."._env('DEFAULT_TYPE_PHOTO_USER');
             }            
             $user->save();
             
             return response()->json(['status' => 'success', 'message' => 'Usuario creado exitosamente'], 200);
 
         } catch (\Exception $e) {
+            echo $e;
             return response()->json(['status' => 'error', 'message' => $e], 500);
 
         }

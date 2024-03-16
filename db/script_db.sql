@@ -304,7 +304,12 @@ INSERT INTO administrativo(nombre,correo,rol,url_imagen,activo,created_at,update
 ('Ricardo','c2@correo.com',1,'admin.png',1,'2024-03-08 07:15:30','2024-03-08 07:15:30',0x24327924313024393367376F4268696C6D716561593373396F4A4A496537374A6541656631503369575935724472754844704B4D5479636C4D343632,1);
 
 
-
+INSERT INTO tipo_categoria_producto(nombre,created_at,updated_at) values
+('Tecnologia','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Computadoras','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Salud','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Belleza','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Educacion','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
 
 

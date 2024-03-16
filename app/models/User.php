@@ -5,7 +5,6 @@ namespace App\Models;
 class User extends Model{
     protected $table = 'usuario';
 
-    // Definición de atributos de la tabla
     protected $fillable = [
         'id_usuario',
         'nombre',                         

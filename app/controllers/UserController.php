@@ -33,7 +33,7 @@ class UserController extends Controller{
                  $type = explode("/", $image['type']);
                  $image['name'] = app()->request()->get('email') . "." . $type[1];
                  $user->url_imagen = $image['name'];
-                FS::uploadFile($image, "./images/");
+                 FS::uploadFile($image, "./images/");
             }else{
                  $user->url_imagen = _env('DEFAULT_NAME_PHOTO_USER')."."._env('DEFAULT_TYPE_PHOTO_USER');
             }            
@@ -43,7 +43,7 @@ class UserController extends Controller{
 
         } catch (\Exception $e) {
             echo $e;
-            return response()->json(['status' => 'error', 'message' => $e], 500);
+            return response()->json(['status' => 'error', 'message' => 'Error al crear el usuario'], 500);
 
         }
         

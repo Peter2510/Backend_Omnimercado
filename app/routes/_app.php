@@ -22,3 +22,5 @@ app()->post('/crear-admin','AdminController@createAdmin');
 /** PRODUCTS */
 app()->get('/obtener-condicion-productos','ProductController@getAllProductConditionType');
 app()->get('/obtener-categorias-productos','ProductController@getAllProductCategories');
+app()->post('/crear-publicacion-producto','ProductController@createProductPost');
+

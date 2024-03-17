@@ -10,4 +10,5 @@ namespace App\Models;
  */
 class Model extends \Leaf\Model
 {
+    protected $hidden = ['created_at', 'updated_at','contrasenia'];
 }

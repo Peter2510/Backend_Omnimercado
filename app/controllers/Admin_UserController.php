@@ -89,7 +89,6 @@ class Admin_UserController extends Controller
 
             if ($user) {
                 if (password_verify($password, $user->contrasenia)) {
-                    $user->makeHidden(['contrasenia']);
                     $profile_image = $this->profile_image($user->url_imagen);
                     return response()->json(['status' => 'success',  'user' => $user,'profile_image'=>$profile_image], 200);
                 }
@@ -99,7 +98,6 @@ class Admin_UserController extends Controller
 
                 if ($admin) {
                     if (password_verify($password, $admin->contrasenia)) {
-                        $admin->makeHidden(['contrasenia']);
                         $profile_image = $this->profile_image($admin->url_imagen);
                         return response()->json(['status' => 'success',  'admin' => $admin,'profile_image'=>$profile_image], 200);
                     }
@@ -130,7 +128,6 @@ class Admin_UserController extends Controller
 
             if ($user) {
                 if (password_verify($password, $user->contrasenia)) {
-                    $user->makeHidden(['contrasenia']);
                     $now = strtotime("now");
                     $key = _env('KEY_JWT');
                     $payload = [
@@ -146,7 +143,6 @@ class Admin_UserController extends Controller
 
                 if ($admin) {
                     if (password_verify($password, $admin->contrasenia)) {
-                        $admin->makeHidden(['contrasenia']);
                         $now = strtotime("now");
                         $key = _env('KEY_JWT');
                         $payload = [

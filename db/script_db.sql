@@ -83,9 +83,10 @@ CREATE TABLE producto(
     id_estado_producto INT NOT NULL,
     fecha_publicacion DATE NOT NULL,
     tipo_condicion INT NOT NULL,   
-    url_imagen TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
+    id_publicador INT NOT NULL,
+    FOREIGN KEY (id_publicador) REFERENCES usuario(id_usuario),
     FOREIGN KEY (id_estado_producto) REFERENCES estado_producto(id_estado_producto),
     FOREIGN KEY (tipo_condicion) REFERENCES tipo_condicion(id_tipo_condicion)
 );
@@ -290,6 +291,7 @@ INSERT INTO tipo_condicion(nombre,created_at,updated_at) VALUES
 ('Usado','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
 INSERT INTO estado_producto(nombre,created_at,updated_at) values
+('Oculto','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Disponible','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Vendido','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
@@ -309,6 +311,7 @@ INSERT INTO tipo_categoria_producto(nombre,created_at,updated_at) values
 ('Computadoras','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Salud','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Belleza','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Vehiculos','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Educacion','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
 

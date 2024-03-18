@@ -48,9 +48,17 @@ class Admin_UserController extends Controller
         }
     }
 
-    function profile_image($url_image){
+    function profile_image($url_image,$type){
 
-        $pathImage = 'images/' . $url_image;
+        switch ($type) {
+            case 1:
+                $pathImage = _env("STORAGE_USER_IMAGES") . $url_image;
+                break;
+            case 2:
+                $pathImage = _env("STORAGE_ADMIN_IMAGES") . $url_image;
+                break;
+
+        }
 
         if (file_exists($pathImage)) {
             $imageData = file_get_contents($pathImage);
@@ -63,7 +71,7 @@ class Admin_UserController extends Controller
             return $image_data_json;
         } else {
 
-            $pathDefaultImage = 'images/' . _env('DEFAULT_NAME_PHOTO_USER')."."._env('DEFAULT_TYPE_PHOTO_USER');
+            $pathDefaultImage = _env("STORAGE_USER_IMAGES") . _env('DEFAULT_NAME_PHOTO_USER')."."._env('DEFAULT_TYPE_PHOTO_USER');
             $imageData = file_get_contents($pathDefaultImage);
             $image_data_json = [
                 'type' => FS::extension($pathDefaultImage),
@@ -73,6 +81,7 @@ class Admin_UserController extends Controller
             return $image_data_json;
         }
     }
+
     function login()
     {
         try {
@@ -89,7 +98,7 @@ class Admin_UserController extends Controller
 
             if ($user) {
                 if (password_verify($password, $user->contrasenia)) {
-                    $profile_image = $this->profile_image($user->url_imagen);
+                    $profile_image = $this->profile_image($user->url_imagen,1);
                     return response()->json(['status' => 'success',  'user' => $user,'profile_image'=>$profile_image], 200);
                 }
             } else {
@@ -98,7 +107,7 @@ class Admin_UserController extends Controller
 
                 if ($admin) {
                     if (password_verify($password, $admin->contrasenia)) {
-                        $profile_image = $this->profile_image($admin->url_imagen);
+                        $profile_image = $this->profile_image($admin->url_imagen,2);
                         return response()->json(['status' => 'success',  'admin' => $admin,'profile_image'=>$profile_image], 200);
                     }
                 }

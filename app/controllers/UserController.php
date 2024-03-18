@@ -33,7 +33,7 @@ class UserController extends Controller{
                  $type = explode("/", $image['type']);
                  $image['name'] = app()->request()->get('email') . "." . $type[1];
                  $user->url_imagen = $image['name'];
-                 FS::uploadFile($image, "./images/");
+                 FS::uploadFile($image, _env('STORAGE_USER_IMAGES'));
             }else{
                  $user->url_imagen = _env('DEFAULT_NAME_PHOTO_USER')."."._env('DEFAULT_TYPE_PHOTO_USER');
             }            

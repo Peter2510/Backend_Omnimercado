@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\ImageProduct;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\ProductCategoryType;
 use App\Models\ProductConditionType;
 use Leaf\FS;
@@ -48,7 +49,7 @@ class ProductController extends Controller
             $product->tipo_condicion = app()->request()->get('condition'); //usado, nuevo 
             $product->id_publicador = app()->request()->get('id_user');
             $product->save();
-            $idProducto = $product->getKey();
+            $idProduct = $product->getKey();
             
             //Save images
             $file = app()->request()->files("photo");
@@ -66,10 +67,10 @@ class ProductController extends Controller
                     ];
                     $extension = explode("/", $fileDetails['type']);
                     $image = new ImageProduct;
-                    $image->id_producto = $idProducto;
-                    $fileDetails['name'] = $idProducto."_".$count.".".$extension[1];
+                    $image->id_producto = $idProduct;
+                    $fileDetails['name'] = $idProduct."_".$count.".".$extension[1];
                     $image->url_imagen= $fileDetails['name'];
-                    FS::uploadFile($fileDetails, "./images/");
+                    FS::uploadFile($fileDetails, _env("STORAGE_PRODUCTS_IMAGES"));
                     $count++;
                     $image->save();
                 }
@@ -78,10 +79,16 @@ class ProductController extends Controller
             }
 
             //Save categories
-            
+            $categories = app()->request()->get('id_categories');
+                               
+            foreach ($categories as $categoryId) {
+                $category = new ProductCategory;
+                $category->id_producto = $idProduct;
+                $category->id_tipo_categoria = $categoryId;
+                $category->save(); 
+            }
 
-
-            return response()->json(['status' => 'success', 'message' => 'Se ha publicación exitosamente'], 200);
+            return response()->json(['status' => 'success', 'message' => 'Publicación realizada'], 200);
         } catch (\Exception $e) {
             echo $e;
             return response()->json(['status' => 'error', 'message' => 'Error al crear la publicacion'], 500);

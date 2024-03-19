@@ -36,7 +36,7 @@ class ProductController extends Controller
     {
 
         try {
-            $products = Product::select('id_producto', 'titulo', 'precio_moneda_local', 'precio_moneda_virtual', 'descripcion', 'id_estado_producto', 'fecha_publicacion', 'tipo_condicion', 'id_publicador')
+            $products = Product::select('id_producto', 'titulo', 'precio_moneda_local', 'precio_moneda_virtual', 'fecha_publicacion')
                 ->where('id_estado_producto', 1)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();
@@ -55,6 +55,52 @@ class ProductController extends Controller
         }
     }
 
+    function getUserProducts($user_id)
+    {
+
+        try {
+            $products = Product::select('id_producto', 'titulo', 'precio_moneda_local', 'precio_moneda_virtual', 'id_estado_producto', 'fecha_publicacion')
+                ->where('id_publicador', $user_id)
+                ->orderBy('fecha_publicacion', 'desc')
+                ->get();
+
+            foreach ($products as $product) {
+                $image = $this->productImage($product->id_producto);
+                if ($image) {
+                    $product['images'] = $image;
+                }
+            }
+
+            return response()->json(['status' => 'success', 'products' => $products], 200);
+        } catch (\Exception $e) {
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos disponibles'], 500);
+        }
+    }
+
+
+    function getUserAvailableProducts($user_id){
+        try {
+            
+            $products = Product::select('id_producto', 'titulo', 'precio_moneda_local', 'precio_moneda_virtual', 'fecha_publicacion')
+                ->where('id_estado_producto', 1)
+                ->where('id_publicador', '!=', $user_id)
+                ->orderBy('fecha_publicacion', 'asc')
+                ->get();
+        
+            foreach ($products as $product) {
+                $image = $this->productImage($product->id_producto);
+                if ($image) {
+                    $product['images'] = $image;
+                }
+            }
+        
+            return response()->json(['status' => 'success', 'products' => $products], 200);
+        } catch (\Exception $e) {
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos disponibles'], 500);
+        }
+    }
 
     function productImage($id)
     {

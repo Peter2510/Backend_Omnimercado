@@ -113,7 +113,7 @@ CREATE TABLE venta(
 
 CREATE TABLE tipo_categoria_producto(
     id_tipo_categoria INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(35) NOT NULL,
+    nombre VARCHAR(35) NOT NULL UNIQUE,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
@@ -312,6 +312,14 @@ INSERT INTO tipo_categoria_producto(nombre,created_at,updated_at) values
 ('Salud','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Belleza','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Vehiculos','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Musica','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Antigüedades','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Hogar','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Herramienta','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Jardineria','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Videojuegos','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Libros','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Peliculas','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Educacion','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
 

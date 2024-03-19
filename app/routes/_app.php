@@ -24,5 +24,5 @@ app()->get('/obtener-condicion-productos','ProductController@getAllProductCondit
 app()->get('/obtener-categorias-productos','ProductController@getAllProductCategories');
 app()->post('/crear-publicacion-producto','ProductController@createProductPost');
 app()->get('/publicaciones-productos-activas','ProductController@getAvailableProducts');
-app()->get('/publicaciones-productos/{user_id}','ProductController@getUserProducts');
-
+app()->get('/publicaciones-usuario/{user_id}','ProductController@getUserProducts');
+app()->get('/publicaciones-disponibles-para-usuario/{user_id}','ProductController@getUserAvailableProducts');

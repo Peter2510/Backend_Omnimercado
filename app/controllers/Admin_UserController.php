@@ -48,14 +48,14 @@ class Admin_UserController extends Controller
         }
     }
 
-    function profile_image($url_image,$type){
+    function profile_image($image_url,$type){
 
         switch ($type) {
             case 1:
-                $pathImage = _env("STORAGE_USER_IMAGES") . $url_image;
+                $pathImage = _env("STORAGE_USER_IMAGES") . $image_url;
                 break;
             case 2:
-                $pathImage = _env("STORAGE_ADMIN_IMAGES") . $url_image;
+                $pathImage = _env("STORAGE_ADMIN_IMAGES") . $image_url;
                 break;
 
         }

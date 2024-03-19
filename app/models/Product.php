@@ -19,7 +19,7 @@ class Product extends Model
 
     function imageProducts() {
         
-        return $this->belongsTo(ImageProduct::class,'id_producto');
+        return $this->hasMany(ImageProduct::class,'id_producto','id_producto');
         
     }
 

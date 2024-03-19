@@ -12,6 +12,104 @@ use Leaf\FS;
 class ProductController extends Controller
 {
 
+    // function getUserProducts($user_id){
+    // 
+    // try {
+    // 
+    // $product = Product::join('producto_categoria', 'producto.id_producto', '=', 'producto_categoria.id_producto')
+    // ->join('tipo_categoria_producto', 'producto_categoria.id_tipo_categoria', '=', 'tipo_categoria_producto.id_tipo_categoria')
+    // ->join('estado_producto', 'producto.id_estado_producto', '=', 'estado_producto.id_estado_producto') // Unir la tabla de estados del producto
+    // ->join('tipo_condicion', 'producto.tipo_condicion', '=', 'tipo_condicion.id_tipo_condicion') // Unir la tabla de tipos de condición
+    // ->where('producto.id_publicador', $user_id) // Filtrar por el ID del usuario
+    // ->groupBy('producto.id_producto') // Agrupar por el ID del producto
+    // ->selectRaw('producto.*, GROUP_CONCAT(tipo_categoria_producto.nombre) as nombres_categorias, estado_producto.nombre as nombre_estado, tipo_condicion.nombre as nombre_tipo_condicion') // Concatenar los nombres de las categorías y seleccionar los nombres de estado y tipo de condición
+    // ->get();
+    // 
+    // return response()->json(['status' => 'success', 'conditionTypes' => $product], 200);
+    // } catch (\Exception $e) {
+    // return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos del usuario'], 500);
+    // }
+    // 
+    // }
+
+    function getAvailableProducts()
+    {
+
+        try {
+            $products = Product::select('id_producto', 'titulo', 'precio_moneda_local', 'precio_moneda_virtual', 'descripcion', 'id_estado_producto', 'fecha_publicacion', 'tipo_condicion', 'id_publicador')
+                ->where('id_estado_producto', 1)
+                ->orderBy('fecha_publicacion', 'asc')
+                ->get();
+
+            foreach ($products as $product) {
+                $image = $this->productImage($product->id_producto);
+                if ($image) {
+                    $product['images'] = $image;
+                }
+            }
+
+            return response()->json(['status' => 'success', 'products' => $products], 200);
+        } catch (\Exception $e) {
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos disponibles'], 500);
+        }
+    }
+
+
+    function productImage($id)
+    {
+
+        $image_url = ImageProduct::select('url_imagen')->where('id_producto', $id)->first();
+
+        if ($image_url) {
+
+            $pathImage = _env("STORAGE_PRODUCTS_IMAGES") . $image_url->url_imagen;
+
+            if (file_exists($pathImage)) {
+
+                $imageData = file_get_contents($pathImage);
+
+                $image_data_json = [
+                    'type' => FS::extension($pathImage),
+                    'image' => base64_encode($imageData)
+                ];
+
+                return $image_data_json;
+            }
+        }
+
+        return null;
+    }
+
+    function productImages($id)
+    {
+
+        $image_urls = ImageProduct::select('url_imagen')->where('id_producto', $id)->get();
+
+        $url_list = $image_urls->pluck('url_imagen')->toArray();
+        $image_list = [];
+
+        foreach ($url_list as $url) {
+            $pathImage = _env("STORAGE_PRODUCTS_IMAGES") . $url;
+
+            if (file_exists($pathImage)) {
+
+                $imageData = file_get_contents($pathImage);
+
+                $image_data_json = [
+                    'type' => FS::extension($pathImage),
+                    'image' => base64_encode($imageData)
+                ];
+
+                $image_list[] = $image_data_json;
+            }
+        }
+
+        return $image_list;
+    }
+
+
+
     public function getAllProductConditionType()
     {
         try {
@@ -44,19 +142,19 @@ class ProductController extends Controller
             $product->precio_moneda_local = app()->request()->get('localCurrency');
             $product->precio_moneda_virtual = app()->request()->get('virtualCoin');
             $product->descripcion = app()->request()->get('description');
-            $product->id_estado_producto = 2; //Disponible
+            $product->id_estado_producto = 1; //Disponible
             $product->fecha_publicacion = date("Y-m-d");
             $product->tipo_condicion = app()->request()->get('condition'); //usado, nuevo 
             $product->id_publicador = app()->request()->get('id_user');
             $product->save();
             $idProduct = $product->getKey();
-            
+
             //Save images
             $file = app()->request()->files("photo");
-            
+
             if ($file != null) {
                 $count = 1;
-                foreach ($file['name'] as $index => $fileName) {                                        
+                foreach ($file['name'] as $index => $fileName) {
                     $fileDetails = [
                         'name' => $file['name'][$index],
                         'full_path' => $file['full_path'][$index],
@@ -68,30 +166,30 @@ class ProductController extends Controller
                     $extension = explode("/", $fileDetails['type']);
                     $image = new ImageProduct;
                     $image->id_producto = $idProduct;
-                    $fileDetails['name'] = $idProduct."_".$count.".".$extension[1];
-                    $image->url_imagen= $fileDetails['name'];
+                    $fileDetails['name'] = $idProduct . "_" . $count . "." . $extension[1];
+                    $image->url_imagen = $fileDetails['name'];
                     FS::uploadFile($fileDetails, _env("STORAGE_PRODUCTS_IMAGES"));
                     $count++;
                     $image->save();
                 }
-            }else{
+            } else {
                 return response()->json(['status' => 'error', 'message' => 'Error al crear la publicacion'], 500);
             }
 
             //Save categories
             $categories = app()->request()->get('id_categories');
-                               
+
             foreach ($categories as $categoryId) {
                 $category = new ProductCategory;
                 $category->id_producto = $idProduct;
                 $category->id_tipo_categoria = $categoryId;
-                $category->save(); 
+                $category->save();
             }
 
             return response()->json(['status' => 'success', 'message' => 'Publicación realizada'], 200);
         } catch (\Exception $e) {
             echo $e;
-            return response()->json(['status' => 'error', 'message' => 'Error al crear la publicacion'], 500);
+            return response()->json(['status' => 'error', 'message' => $e], 500);
         }
     }
 }

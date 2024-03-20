@@ -8,9 +8,17 @@ FLUSH PRIVILEGES;
 
 USE omnimercado;
 
+CREATE TABLE restriccion(
+    id_restriccion INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    tipo VARCHAR(35) NOT NULL UNIQUE,
+    cantidad VARCHAR(35) NOT NULL UNIQUE,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
+);
+
 CREATE TABLE rol(
     id_rol INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(20) NOT NULL UNIQUE,
+    nombre VARCHAR(35) NOT NULL UNIQUE,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
@@ -283,6 +291,7 @@ CREATE TABLE reporte_voluntariado_especial(
     FOREIGN KEY (id_voluntariado_especial) REFERENCES voluntariado_especial(id_voluntariado)
 );
 
+INSERT INTO restriccion(tipo, cantidad,created_at,updated_at) VALUES ('Aprobaciones minimas para productos',5,'2024-03-08 07:15:30','2024-03-08 07:15:30');
 
 INSERT INTO rol(nombre,created_at,updated_at) VALUES ('admin','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
@@ -321,6 +330,5 @@ INSERT INTO tipo_categoria_producto(nombre,created_at,updated_at) values
 ('Libros','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Peliculas','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Educacion','2024-03-08 07:15:30','2024-03-08 07:15:30');
-
 
 

@@ -12,7 +12,6 @@ use Leaf\FS;
 class Admin_UserController extends Controller
 {
 
-
     function getGenders()
     {
 
@@ -93,7 +92,7 @@ class Admin_UserController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'El campo correo y contraseña son obligatorios'], 400);
             }
 
-            $user = User::select('id_usuario', 'nombre', 'contrasenia', 'cantidad_moneda_virtual', 'url_imagen', 'activo_plataforma')
+            $user = User::select('id_usuario', 'nombre', 'contrasenia', 'cantidad_moneda_virtual', 'url_imagen', 'activo_plataforma','activo_publicar')
                 ->where('correo', $email)->first();
 
             if ($user) {

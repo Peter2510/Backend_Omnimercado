@@ -12,7 +12,7 @@ class UserController extends Controller{
             $user = new User;
             $user->nombre = app()->request()->get('name');
             $user->correo = app()->request()->get('email');
-            $user->genero = 1;
+            $user->genero = app()->request()->get('gender');
             $user->fecha_nacimiento = app()->request()->get('birthYear');
             $user->contrasenia = password_hash(app()->request()->get('password'), PASSWORD_DEFAULT);
             $user->moneda_local_gastada = 0;

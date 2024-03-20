@@ -2,8 +2,25 @@
 
 namespace App\Controllers;
 use App\Models\Admin;
+use App\Models\Role;
 
 class AdminController extends Controller{
+    
+    function getRoles(){
+        
+        try {
+            $roles = Role::all();          
+        
+            return response()->json(['status' => 'success', 'roles' => $roles], 200);
+
+        } catch (\Exception $e) {
+            
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los roles'], 500);
+
+        }
+
+    }
+    
     
     function createAdmin() {
         
@@ -12,17 +29,18 @@ class AdminController extends Controller{
             $admin->nombre = app()->request()->get('name');
             $admin->correo = app()->request()->get('email');
             $admin->contrasenia = password_hash(app()->request()->get('password'), PASSWORD_DEFAULT);
-            $admin->url_imagen = 'admin.png';
-            $admin->rol = app()->request()->get('role');
-            $admin->activo =app()->request()->get('active');
-
+            $admin->rol = app()->request()->get('rol');
+            $admin->activo = _env('ACTIVE_ADMIN_DEFAULT');;
+            $admin->genero = app()->request()->get('gender');
+            $admin->url_imagen = _env('DEFAULT_NAME_PHOTO_ADMIN')."."._env('DEFAULT_TYPE_PHOTO_ADMIN');
+            
             $admin->save();
-        
-            return response()->json(['status' => 'success', 'message' => 'Administrador creado exitosamente'], 200);
+            
+            return response()->json(['status' => 'success', 'message' => 'Usuario adminstrativo creado'], 200);
 
         } catch (\Exception $e) {
-            
-            return response()->json(['status' => 'error', 'message' => 'Error al crear el administrador'], 500);
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al usuario administrativo'], 500);
 
         }
         

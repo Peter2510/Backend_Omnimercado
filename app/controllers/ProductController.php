@@ -79,22 +79,23 @@ class ProductController extends Controller
     }
 
 
-    function getUserAvailableProducts($user_id){
+    function getUserAvailableProducts($user_id)
+    {
         try {
-            
+
             $products = Product::select('id_producto', 'titulo', 'precio_moneda_local', 'precio_moneda_virtual', 'fecha_publicacion')
                 ->where('id_estado_producto', 1)
                 ->where('id_publicador', '!=', $user_id)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();
-        
+
             foreach ($products as $product) {
                 $image = $this->productImage($product->id_producto);
                 if ($image) {
                     $product['images'] = $image;
                 }
             }
-        
+
             return response()->json(['status' => 'success', 'products' => $products], 200);
         } catch (\Exception $e) {
             echo $e;
@@ -188,10 +189,18 @@ class ProductController extends Controller
             $product->precio_moneda_local = app()->request()->get('localCurrency');
             $product->precio_moneda_virtual = app()->request()->get('virtualCoin');
             $product->descripcion = app()->request()->get('description');
-            $product->id_estado_producto = 1; //Disponible
+
             $product->fecha_publicacion = date("Y-m-d");
             $product->tipo_condicion = app()->request()->get('condition'); //usado, nuevo 
             $product->id_publicador = app()->request()->get('id_user');
+            $active_to_publish = app()->request()->get('active_to_publish');
+
+            if ($active_to_publish == 1) {
+                $product->id_estado_producto = 1; //Disponible
+            } else if ($active_to_publish == 0) {
+                $product->id_estado_producto = 3; //Oculto
+            }
+
             $product->save();
             $idProduct = $product->getKey();
 
@@ -234,8 +243,28 @@ class ProductController extends Controller
 
             return response()->json(['status' => 'success', 'message' => 'Publicación realizada'], 200);
         } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al crear la publicacion'], 500);
+        }
+    }
+    public function productsPendingApproval()
+    {
+        try {
+            $products = Product::select('id_producto', 'titulo', 'fecha_publicacion')
+                ->where('id_estado_producto', 3)
+                ->orderBy('fecha_publicacion', 'asc')
+                ->get();
+
+            foreach ($products as $product) {
+                $image = $this->productImage($product->id_producto);
+                if ($image) {
+                    $product['images'] = $image;
+                }
+            }
+
+            return response()->json(['status' => 'success', 'products' => $products], 200);
+        } catch (\Exception $e) {
             echo $e;
-            return response()->json(['status' => 'error', 'message' => $e], 500);
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos disponibles'], 500);
         }
     }
 }

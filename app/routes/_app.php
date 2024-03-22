@@ -36,8 +36,11 @@ app()->post('/crear-publicacion-producto-trueque','BarterProductController@creat
 
 
 app()->get('/publicaciones-intercambio-productos-activas','BarterProductController@getAvailableBarterProducts');
-app()->get('/publicaciones-usuario/{user_id}','BarterProductController@getUserBarterProducts');
+app()->get('/productos-intercambio-pendientes-aprobacion','BarterProductController@barterProductsPendingApproval');
+app()->get('/productos-intercambio-usuario/{user_id}','BarterProductController@getUserBarterProducts');
+
+
 app()->get('/publicaciones-disponibles-para-usuario/{user_id}','BarterProductController@getUserAvailableBarterProducts');
-app()->get('/productos-pendientes-aprobacion','BarterProductController@barterProductsPendingApproval');
+
 
 

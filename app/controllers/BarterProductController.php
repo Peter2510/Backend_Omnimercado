@@ -16,7 +16,7 @@ class BarterProductController extends Controller
 
         try {
             $barterProducts = BarterProduct::select('id_producto_trueque', 'titulo', 'equivalente_moneda_local','equivalente_moneda_virtual', 'fecha_publicacion')
-                ->where('id_estado', 1)
+                ->where('id_estado', 3)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();
 
@@ -30,7 +30,7 @@ class BarterProductController extends Controller
             return response()->json(['status' => 'success', 'barterProducts' => $barterProducts], 200);
         } catch (\Exception $e) {
             echo $e;
-            return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos disponibles'], 500);
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los intercambios disponibles'], 500);
         }
     }
 
@@ -38,7 +38,7 @@ class BarterProductController extends Controller
     {
 
         try {
-            $barterProducts = BarterProduct::select('id_producto_trueque', 'titulo', 'equivalente_moneda_local', 'equivalente_moneda_virtual' , 'id_estado_producto', 'fecha_publicacion')
+            $barterProducts = BarterProduct::select('id_producto_trueque', 'titulo', 'equivalente_moneda_local', 'equivalente_moneda_virtual' , 'id_estado', 'fecha_publicacion')
                 ->where('id_publicador', $user_id)
                 ->orderBy('fecha_publicacion', 'desc')
                 ->get();
@@ -53,7 +53,7 @@ class BarterProductController extends Controller
             return response()->json(['status' => 'success', 'barterProducts' => $barterProducts], 200);
         } catch (\Exception $e) {
             echo $e;
-            return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos disponibles'], 500);
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los intercambios disponibles'], 500);
         }
     }
 
@@ -63,7 +63,7 @@ class BarterProductController extends Controller
         try {
 
             $barterProducts = BarterProduct::select('id_producto_trueque', 'titulo', 'precio_moneda_virtual', 'fecha_publicacion')
-                ->where('id_estado_producto', 1)
+                ->where('id_estado_producto', 3)
                 ->where('id_publicador', '!=', $user_id)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();
@@ -78,7 +78,7 @@ class BarterProductController extends Controller
             return response()->json(['status' => 'success', 'barterProducts' => $barterProducts], 200);
         } catch (\Exception $e) {
             echo $e;
-            return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos disponibles'], 500);
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los intercambios disponibles'], 500);
         }
     }
 
@@ -89,7 +89,7 @@ class BarterProductController extends Controller
 
         if ($image_url) {
 
-            $pathImage = _env("STORAGE_PRODUCTS_IMAGES") . $image_url->url_imagen;
+            $pathImage = _env("STORAGE_BARTER_PRODUCTS_IMAGES") . $image_url->url_imagen;
 
             if (file_exists($pathImage)) {
 
@@ -116,7 +116,7 @@ class BarterProductController extends Controller
         $image_list = [];
 
         foreach ($url_list as $url) {
-            $pathImage = _env("STORAGE_PRODUCTS_IMAGES") . $url;
+            $pathImage = _env("STORAGE_BARTER_PRODUCTS_IMAGES") . $url;
 
             if (file_exists($pathImage)) {
 
@@ -150,9 +150,9 @@ class BarterProductController extends Controller
             $active_to_publish = app()->request()->get('active_to_publish');
 
             if ($active_to_publish == 1) {
-                $barterProduct->id_estado = 1; //Disponible
+                $barterProduct->id_estado = 2; //Disponible
             } else if ($active_to_publish == 0) {
-                $barterProduct->id_estado = 3; //Oculto
+                $barterProduct->id_estado = 1; //Oculto
             }
 
             $barterProduct->save();
@@ -207,7 +207,7 @@ class BarterProductController extends Controller
     {
         try {
             $barterProducts = BarterProduct::select('id_producto_trueque', 'titulo', 'fecha_publicacion')
-                ->where('id_estado_producto', 3)
+                ->where('id_estado', 3)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();
 
@@ -221,7 +221,7 @@ class BarterProductController extends Controller
             return response()->json(['status' => 'success', 'barterProducts' => $barterProducts], 200);
         } catch (\Exception $e) {
             echo $e;
-            return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos disponibles'], 500);
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los intercambios pendientes de aprobacion'], 500);
         }
     }
 }

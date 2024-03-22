@@ -17,7 +17,7 @@ class ProductController extends Controller
 
         try {
             $products = Product::select('id_producto', 'titulo', 'precio_moneda_virtual', 'fecha_publicacion')
-                ->where('id_estado_producto', 1)
+                ->where('id_estado_producto', 3)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();
 
@@ -64,7 +64,7 @@ class ProductController extends Controller
         try {
 
             $products = Product::select('id_producto', 'titulo', 'precio_moneda_virtual', 'fecha_publicacion')
-                ->where('id_estado_producto', 1)
+                ->where('id_estado_producto', 3)
                 ->where('id_publicador', '!=', $user_id)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();

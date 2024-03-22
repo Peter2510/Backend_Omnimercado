@@ -17,9 +17,7 @@ class Product extends Model
     ];
 
     function imageProducts() {
-        
         return $this->hasMany(ImageProduct::class,'id_producto','id_producto');
-        
     }
 
    

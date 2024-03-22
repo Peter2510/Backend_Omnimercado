@@ -1,5 +1,5 @@
 <?php
-
+#sudo chmod -R 777 /opt/lampp/htdocs/omnimercado
 app()->get('/', function () {
     response()->json(['message' => 'API Omnimercado']);
 });
@@ -30,3 +30,14 @@ app()->get('/publicaciones-productos-activas','ProductController@getAvailablePro
 app()->get('/publicaciones-usuario/{user_id}','ProductController@getUserProducts');
 app()->get('/publicaciones-disponibles-para-usuario/{user_id}','ProductController@getUserAvailableProducts');
 app()->get('/productos-pendientes-aprobacion','ProductController@productsPendingApproval');
+
+/*/ BARTER PRODUCTS */
+app()->post('/crear-publicacion-producto-trueque','BarterProductController@createBarterProduct');
+
+
+app()->get('/publicaciones-intercambio-productos-activas','BarterProductController@getAvailableBarterProducts');
+app()->get('/publicaciones-usuario/{user_id}','BarterProductController@getUserBarterProducts');
+app()->get('/publicaciones-disponibles-para-usuario/{user_id}','BarterProductController@getUserAvailableBarterProducts');
+app()->get('/productos-pendientes-aprobacion','BarterProductController@barterProductsPendingApproval');
+
+

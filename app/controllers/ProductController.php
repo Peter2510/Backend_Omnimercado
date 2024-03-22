@@ -12,26 +12,6 @@ use Leaf\FS;
 class ProductController extends Controller
 {
 
-    // function getUserProducts($user_id){
-    // 
-    // try {
-    // 
-    // $product = Product::join('producto_categoria', 'producto.id_producto', '=', 'producto_categoria.id_producto')
-    // ->join('tipo_categoria_producto', 'producto_categoria.id_tipo_categoria', '=', 'tipo_categoria_producto.id_tipo_categoria')
-    // ->join('estado_producto', 'producto.id_estado_producto', '=', 'estado_producto.id_estado_producto') // Unir la tabla de estados del producto
-    // ->join('tipo_condicion', 'producto.tipo_condicion', '=', 'tipo_condicion.id_tipo_condicion') // Unir la tabla de tipos de condición
-    // ->where('producto.id_publicador', $user_id) // Filtrar por el ID del usuario
-    // ->groupBy('producto.id_producto') // Agrupar por el ID del producto
-    // ->selectRaw('producto.*, GROUP_CONCAT(tipo_categoria_producto.nombre) as nombres_categorias, estado_producto.nombre as nombre_estado, tipo_condicion.nombre as nombre_tipo_condicion') // Concatenar los nombres de las categorías y seleccionar los nombres de estado y tipo de condición
-    // ->get();
-    // 
-    // return response()->json(['status' => 'success', 'conditionTypes' => $product], 200);
-    // } catch (\Exception $e) {
-    // return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos del usuario'], 500);
-    // }
-    // 
-    // }
-
     function getAvailableProducts()
     {
 

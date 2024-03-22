@@ -16,8 +16,6 @@ class User extends Model{
         'cantidad_moneda_virtual',
         'moneda_virtual_ganada',
         'moneda_virtual_gastada',
-        'cantidad_publicaciones_productos',
-        'cantidad_publicaciones_voluntariados',
         'promedio_valoracion',
         'activo_publicar',
         'activo_plataforma', 

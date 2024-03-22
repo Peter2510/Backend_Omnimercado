@@ -20,8 +20,6 @@ class UserController extends Controller{
             $user->cantidad_moneda_virtual = _env('INIT_COINS');
             $user->moneda_virtual_ganada = 0;
             $user->moneda_virtual_gastada = 0;
-            $user->cantidad_publicaciones_productos = 0;
-            $user->cantidad_publicaciones_voluntariados = 0;
             $user->promedio_valoracion = 0;
             $user->activo_publicar = 0;
             $user->activo_plataforma = _env('ACTIVE_USER_DEFAULT');

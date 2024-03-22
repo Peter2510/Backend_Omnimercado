@@ -36,7 +36,7 @@ class ProductController extends Controller
     {
 
         try {
-            $products = Product::select('id_producto', 'titulo', 'precio_moneda_local', 'precio_moneda_virtual', 'fecha_publicacion')
+            $products = Product::select('id_producto', 'titulo', 'precio_moneda_virtual', 'fecha_publicacion')
                 ->where('id_estado_producto', 1)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();
@@ -59,7 +59,7 @@ class ProductController extends Controller
     {
 
         try {
-            $products = Product::select('id_producto', 'titulo', 'precio_moneda_local', 'precio_moneda_virtual', 'id_estado_producto', 'fecha_publicacion')
+            $products = Product::select('id_producto', 'titulo', 'precio_moneda_virtual', 'id_estado_producto', 'fecha_publicacion')
                 ->where('id_publicador', $user_id)
                 ->orderBy('fecha_publicacion', 'desc')
                 ->get();
@@ -83,7 +83,7 @@ class ProductController extends Controller
     {
         try {
 
-            $products = Product::select('id_producto', 'titulo', 'precio_moneda_local', 'precio_moneda_virtual', 'fecha_publicacion')
+            $products = Product::select('id_producto', 'titulo', 'precio_moneda_virtual', 'fecha_publicacion')
                 ->where('id_estado_producto', 1)
                 ->where('id_publicador', '!=', $user_id)
                 ->orderBy('fecha_publicacion', 'asc')
@@ -186,7 +186,6 @@ class ProductController extends Controller
         try {
             $product = new Product;
             $product->titulo = app()->request()->get('title');
-            $product->precio_moneda_local = app()->request()->get('localCurrency');
             $product->precio_moneda_virtual = app()->request()->get('virtualCoin');
             $product->descripcion = app()->request()->get('description');
 

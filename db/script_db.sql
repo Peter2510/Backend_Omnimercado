@@ -54,8 +54,6 @@ CREATE TABLE usuario(
     cantidad_moneda_virtual DECIMAL(8,2) NOT NULL,
     moneda_virtual_ganada DECIMAL(8,2) NOT NULL,
     moneda_virtual_gastada DECIMAL(8,2) NOT NULL,
-    cantidad_publicaciones_productos INT NOT NULL,
-    cantidad_publicaciones_voluntariados INT NOT NULL,
     promedio_valoracion DECIMAL(3,1)NOT NULL,
     activo_publicar TINYINT(1) NOT NULL,
     activo_plataforma TINYINT(1) NOT NULL,
@@ -85,7 +83,6 @@ CREATE TABLE tipo_condicion(
 CREATE TABLE producto(
     id_producto INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     titulo VARCHAR(100) NOT NULL,
-    precio_moneda_local DECIMAL(8,2) NOT NULL,
     precio_moneda_virtual DECIMAL(8,2) NOT NULL,
     descripcion TEXT NOT NULL,
     id_estado_producto INT NOT NULL,
@@ -175,6 +172,7 @@ CREATE TABLE voluntariado(
     maximo_edad INT NOT NULL,
     id_estado INT NOT NULL,
     id_publicador INT NOT NULL,
+    fecha_publicacion DATE NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     PRIMARY KEY(id_voluntariado,codigo_pago),
@@ -244,6 +242,7 @@ CREATE TABLE voluntariado_especial(
     maximo_edad INT NOT NULL,
     id_estado INT NOT NULL,
     id_publicador INT NOT NULL,
+    fecha_publicacion DATE NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     PRIMARY KEY(id_voluntariado,codigo_pago),
@@ -291,9 +290,96 @@ CREATE TABLE reporte_voluntariado_especial(
     FOREIGN KEY (id_voluntariado_especial) REFERENCES voluntariado_especial(id_voluntariado)
 );
 
+CREATE TABLE chat(
+    id_chat INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_comprador INT NOT NULL,
+    id_vendedor INT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (id_comprador) REFERENCES usuario(id_usuario),
+    FOREIGN KEY (id_vendedor) REFERENCES usuario(id_usuario)    
+);
+
+CREATE TABLE publicacion_compra(
+    id_publicacion_compra INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(45) NOT NULL,
+    descripcion TEXT NOT NULL,
+    precio_monena_local DECIMAL(8,2) NOT NULL
+);
+
+CREATE TABLE publicacion_categoria(
+    id_publicacion_categoria INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_publicacion_compra INT NOT NULL,
+    id_tipo_categoria INT NOT NULL,
+    id_publicador INT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (id_publicacion_compra) REFERENCES publicacion_compra(id_publicacion_compra),
+    FOREIGN KEY (id_tipo_categoria) REFERENCES tipo_categoria_producto(id_tipo_categoria),
+    FOREIGN KEY (id_publicador) REFERENCES usuario(id_usuario)    
+);
+
+CREATE TABLE producto_trueque(
+    id_producto_trueque INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(45) NOT NULL,
+    equivalente_moneda_local DECIMAL(8,2) NOT NULL,
+    equivalente_moneda_virtual DECIMAL(8,2) NOT NULL,
+    descripcion_producto TEXT NOT NULL,
+    id_estado INT NOT NULL,
+    fecha_publicacion DATE NOT NULL,
+    id_condicion INT NOT NULL,
+    descripcion_solicitud TEXT NOT NULL,
+    id_publicador INT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (id_estado) REFERENCES estado_producto(id_estado_producto),
+    FOREIGN KEY (id_condicion) REFERENCES tipo_condicion(id_tipo_condicion),
+    FOREIGN KEY (id_publicador) REFERENCES usuario(id_usuario)
+);
+
+CREATE TABLE reporte_producto_trueque(
+    id_reporte_producto_trueque INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_categoria_reporte INT NOT NULL,
+    id_producto_trueque INT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (id_categoria_reporte) REFERENCES categoria_reporte(id_categoria_reporte),
+    FOREIGN KEY (id_producto_trueque) REFERENCES producto_trueque(id_producto_trueque)
+);
+
+CREATE TABLE producto_trueque_categoria(
+    id_producto_trueque_categoria INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_producto_trueque INT NOT NULL,
+    id_tipo_categoria INT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (id_producto_trueque) REFERENCES producto_trueque(id_producto_trueque),
+    FOREIGN KEY (id_tipo_categoria) REFERENCES tipo_categoria_producto(id_tipo_categoria)
+);
+
+CREATE TABLE producto_trueque_imagen(
+    id_url_imagen INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_producto_trueque INT NOT NULL,
+    url_imagen TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    FOREIGN KEY(id_producto_trueque) REFERENCES producto_trueque(id_producto_trueque)
+);
+
+CREATE TABLE trueque(
+    id_trueque INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_producto_trueque INT NOT NULL,
+    id_comprador INT NOT NULL,
+    fecha_trueque DATE NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (id_producto_trueque) REFERENCES producto_trueque(id_producto_trueque),
+    FOREIGN KEY (id_comprador) REFERENCES usuario(id_usuario)
+);
+
 INSERT INTO restriccion(tipo, cantidad,created_at,updated_at) VALUES ('Aprobaciones minimas para productos',5,'2024-03-08 07:15:30','2024-03-08 07:15:30');
 
-INSERT INTO rol(nombre,created_at,updated_at) VALUES ('admin','2024-03-08 07:15:30','2024-03-08 07:15:30');
+INSERT INTO rol(nombre,created_at,updated_at) VALUES ('Administrador General','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
 INSERT INTO tipo_condicion(nombre,created_at,updated_at) VALUES 
 ('Nuevo','2024-03-08 07:15:30','2024-03-08 07:15:30'),
@@ -308,8 +394,8 @@ INSERT INTO genero (nombre) VALUES
 ('Masculino'),
 ('Femenino');
 
-INSERT INTO usuario (nombre,correo,fecha_nacimiento,contrasenia,moneda_local_gastada,moneda_local_ganada,cantidad_moneda_virtual,moneda_virtual_ganada,moneda_virtual_gastada,cantidad_publicaciones_productos,cantidad_publicaciones_voluntariados,promedio_valoracion,activo_publicar,activo_plataforma,url_imagen,created_at,updated_at,genero) VALUES
-	 ('Pedro','c1@correo.com','2000-01-01',0x24327924313024393367376F4268696C6D716561593373396F4A4A496537374A6541656631503369575935724472754844704B4D5479636C4D343632,0.00,0.00,5.00,0.00,0.00,0,0,0.0,0,1,'usuario.png','2024-03-08 07:15:30','2024-03-08 07:15:30',1);
+INSERT INTO usuario (nombre,correo,fecha_nacimiento,contrasenia,moneda_local_gastada,moneda_local_ganada,cantidad_moneda_virtual,moneda_virtual_ganada,moneda_virtual_gastada,promedio_valoracion,activo_publicar,activo_plataforma,url_imagen,created_at,updated_at,genero) VALUES
+	 ('Pedro','c1@correo.com','2000-01-01',0x24327924313024393367376F4268696C6D716561593373396F4A4A496537374A6541656631503369575935724472754844704B4D5479636C4D343632,0.00,0.00,5.00,0.00,0.00,0.0,0,1,'usuario.png','2024-03-08 07:15:30','2024-03-08 07:15:30',1);
 
 INSERT INTO administrativo(nombre,correo,rol,url_imagen,activo,created_at,updated_at,contrasenia,genero) values 
 ('Ricardo','c2@correo.com',1,'admin.png',1,'2024-03-08 07:15:30','2024-03-08 07:15:30',0x24327924313024393367376F4268696C6D716561593373396F4A4A496537374A6541656631503369575935724472754844704B4D5479636C4D343632,1);

@@ -304,19 +304,21 @@ CREATE TABLE publicacion_compra(
     id_publicacion_compra INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     titulo VARCHAR(45) NOT NULL,
     descripcion TEXT NOT NULL,
-    precio_monena_local DECIMAL(8,2) NOT NULL
+    precio_monena_virtual DECIMAL(8,2) NOT NULL,
+    id_publicador INT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (id_publicador) REFERENCES usuario(id_usuario)
 );
 
 CREATE TABLE publicacion_categoria(
     id_publicacion_categoria INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     id_publicacion_compra INT NOT NULL,
     id_tipo_categoria INT NOT NULL,
-    id_publicador INT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     FOREIGN KEY (id_publicacion_compra) REFERENCES publicacion_compra(id_publicacion_compra),
-    FOREIGN KEY (id_tipo_categoria) REFERENCES tipo_categoria_producto(id_tipo_categoria),
-    FOREIGN KEY (id_publicador) REFERENCES usuario(id_usuario)    
+    FOREIGN KEY (id_tipo_categoria) REFERENCES tipo_categoria_producto(id_tipo_categoria)
 );
 
 CREATE TABLE producto_trueque(

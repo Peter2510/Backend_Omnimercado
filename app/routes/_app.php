@@ -22,8 +22,6 @@ app()->get('/obtener-roles-administrativo','AdminController@getRoles');
 app()->post('/crear-admin','AdminController@createAdmin');
 app()->get('/perfil-admin/{user_id}','AdminController@adminProfile');
 
-
-
 /** PRODUCTS */
 app()->get('/obtener-condicion-productos','ProductController@getAllProductConditionType');
 app()->get('/obtener-categorias-productos','ProductController@getAllProductCategories');
@@ -32,10 +30,11 @@ app()->get('/publicaciones-productos-activas','ProductController@getAvailablePro
 app()->get('/publicaciones-usuario/{user_id}','ProductController@getUserProducts');
 app()->get('/publicaciones-disponibles-para-usuario/{user_id}','ProductController@getUserAvailableProducts');
 app()->get('/productos-pendientes-aprobacion','ProductController@productsPendingApproval');
+app()->get('/producto-por-id/{id_producto}','ProductController@getProductById');
 
 /*/ BARTER PRODUCTS */
 app()->post('/crear-publicacion-producto-trueque','BarterProductController@createBarterProduct');
-
+app()->get('/publicacion-producto-trueque-por-id/{id_publicacion}','BarterProductController@getBarterProductById');
 
 app()->get('/publicaciones-intercambio-productos-activas','BarterProductController@getAvailableBarterProducts');
 app()->get('/productos-intercambio-pendientes-aprobacion','BarterProductController@barterProductsPendingApproval');

@@ -224,4 +224,16 @@ class BarterProductController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error al obtener los intercambios pendientes de aprobacion'], 500);
         }
     }
+
+    public function getBarterProductById($id){
+        try {
+            $barterProduct = BarterProduct::findOrFail($id); 
+            return response()->json(['status'=>'success','barterProduct'=>$barterProduct], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Intercambio no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener el intercambio'], 500);
+        }
+    }
+
 }

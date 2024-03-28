@@ -5,6 +5,7 @@ namespace App\Models;
 class BarterProduct extends Model
 {
     protected $table = 'producto_trueque';
+    protected $primaryKey = 'id_producto_trueque';
     protected $fillable = [
         'id_producto_trueque',
         'titulo',

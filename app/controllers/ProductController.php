@@ -225,6 +225,7 @@ class ProductController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error al crear la publicacion'], 500);
         }
     }
+
     public function productsPendingApproval()
     {
         try {
@@ -242,8 +243,19 @@ class ProductController extends Controller
 
             return response()->json(['status' => 'success', 'products' => $products], 200);
         } catch (\Exception $e) {
-            echo $e;
             return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos disponibles'], 500);
         }
     }
+
+    public function getProductById($id){
+        try {
+            $product = Product::findOrFail($id);
+            return response()->json(['status'=>'success','product'=>$product], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener el producto'], 500);
+        }
+    }
+    
 }

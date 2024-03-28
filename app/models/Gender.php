@@ -3,9 +3,10 @@
 namespace App\Models;
 
 class Gender extends Model{
+    
     protected $table = 'genero';
+    protected $primaryKey = 'id_genero';
 
-    // Definición de atributos de la tabla
     protected $fillable = [
         'id_genero',
         'nombre'

@@ -3,6 +3,7 @@
 namespace App\Controllers;
 use App\Models\User;
 use Leaf\FS;
+use App\Controllers\Admin_UserController;
 
 class UserController extends Controller{
 
@@ -43,6 +44,25 @@ class UserController extends Controller{
             echo $e;
             return response()->json(['status' => 'error', 'message' => 'Error al crear el usuario'], 500);
 
+        }
+        
+    }
+
+    function userProfile($user_id) {
+
+        try {
+            
+            $user = $user = User::select('usuario.nombre', 'correo', 'fecha_nacimiento', 'cantidad_moneda_virtual', 'genero.nombre as genero')
+            ->leftJoin('genero', 'usuario.genero', '=', 'genero.id_genero')
+            ->where('id_usuario', $user_id)
+            ->first();
+
+            return response()->json(['status' => 'success', 'user' => $user], 200);
+
+
+        } catch (\Exception $e) {
+            echo($e);
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener el usuario'], 500);
         }
         
     }

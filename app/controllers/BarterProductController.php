@@ -16,7 +16,7 @@ class BarterProductController extends Controller
 
         try {
             $barterProducts = BarterProduct::select('id_producto_trueque', 'titulo', 'equivalente_moneda_local','equivalente_moneda_virtual', 'fecha_publicacion')
-                ->where('id_estado', 3)
+                ->where('id_estado', 2)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();
 
@@ -207,7 +207,7 @@ class BarterProductController extends Controller
     {
         try {
             $barterProducts = BarterProduct::select('id_producto_trueque', 'titulo', 'fecha_publicacion')
-                ->where('id_estado', 3)
+                ->where('id_estado', 1)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();
 

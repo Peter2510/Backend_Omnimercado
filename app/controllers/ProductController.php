@@ -17,7 +17,7 @@ class ProductController extends Controller
 
         try {
             $products = Product::select('id_producto', 'titulo', 'precio_moneda_virtual', 'fecha_publicacion')
-                ->where('id_estado_producto', 3)
+                ->where('id_estado_producto', 2)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();
 
@@ -175,9 +175,9 @@ class ProductController extends Controller
             $active_to_publish = app()->request()->get('active_to_publish');
 
             if ($active_to_publish == 1) {
-                $product->id_estado_producto = 1; //Disponible
+                $product->id_estado_producto = 2; //Disponible
             } else if ($active_to_publish == 0) {
-                $product->id_estado_producto = 3; //Oculto
+                $product->id_estado_producto = 1; //Oculto
             }
 
             $product->save();
@@ -229,7 +229,7 @@ class ProductController extends Controller
     {
         try {
             $products = Product::select('id_producto', 'titulo', 'fecha_publicacion')
-                ->where('id_estado_producto', 3)
+                ->where('id_estado_producto', 1)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();
 

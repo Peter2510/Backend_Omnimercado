@@ -5,6 +5,8 @@ namespace App\Models;
 class User extends Model{
     protected $table = 'usuario';
 
+    protected $primaryKey = 'id_usuario';
+
     protected $fillable = [
         'id_usuario',
         'nombre',                         
@@ -22,6 +24,10 @@ class User extends Model{
         'url_imagen',
         'genero'
     ];
+
+    public function gender() {
+        return $this->belongsTo(Gender::class, 'genero', 'id_genero');
+    }
     
 }
 

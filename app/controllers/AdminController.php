@@ -46,5 +46,24 @@ class AdminController extends Controller{
         
     }
 
+    function adminProfile($user_id) {
+
+        try {
+            
+            $admin = Admin::select('administrativo.nombre', 'correo', 'genero.nombre as genero')
+            ->leftJoin('genero', 'administrativo.genero', '=', 'genero.id_genero')
+            ->where('id_administrativo', $user_id)
+            ->first();
+
+            return response()->json(['status' => 'success', 'admin' => $admin], 200);
+
+
+        } catch (\Exception $e) {
+            echo($e);
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener el usuario'], 500);
+        }
+        
+    }
+
 
 }

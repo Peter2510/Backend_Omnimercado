@@ -228,6 +228,7 @@ class BarterProductController extends Controller
     public function getBarterProductById($id){
         try {
             $barterProduct = BarterProduct::findOrFail($id); 
+            $barterProduct->images = $this->barterProductImages($barterProduct->id_producto_trueque);
             return response()->json(['status'=>'success','barterProduct'=>$barterProduct], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['status' => 'error', 'message' => 'Intercambio no encontrado'], 404);

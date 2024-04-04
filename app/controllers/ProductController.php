@@ -247,15 +247,52 @@ class ProductController extends Controller
         }
     }
 
-    public function getProductById($id){
+    public function getProductById($id)
+    {
         try {
             $product = Product::findOrFail($id);
-            return response()->json(['status'=>'success','product'=>$product], 200);
+            // Obtener las categorías asociadas al producto
+            // Obtener las categorías asociadas al producto
+            $productCategories = $product->ProductCategory;
+
+            // Crear un array para almacenar los nombres de las categorías
+            $categoryNames = [];
+
+            foreach ($productCategories as $productCategory) {
+                // Acceder al nombre del tipo de categoría y agregarlo al array
+                $categoryNames[] = $productCategory->categoryType->nombre;
+            }
+            
+            $product->User;
+
+            $product->User->makeHidden([
+                'fecha_nacimiento',
+                'moneda_local_gastada',
+                'moneda_local_ganada',
+                'cantidad_moneda_virtual',
+                'moneda_virtual_ganada',
+                'moneda_virtual_gastada',
+                'promedio_valoracion',
+                'activo_publicar',
+                'activo_plataforma',
+                'genero',
+                'url_imagen'
+            ]);
+
+            $images = $this->productImages($product->id_producto);
+            $product->images = $images;
+
+            $product->unsetRelation('ProductCategory');
+
+            // Agregar solo los nombres de las categorías al producto
+            $product->category_names = $categoryNames;
+
+            return response()->json(['status' => 'success', 'product' => $product], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
         } catch (\Exception $e) {
+            echo $e;
             return response()->json(['status' => 'error', 'message' => 'Error al obtener el producto'], 500);
         }
     }
-    
 }

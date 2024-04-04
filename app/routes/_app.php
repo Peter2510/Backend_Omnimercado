@@ -28,7 +28,7 @@ app()->get('/obtener-categorias-productos','ProductController@getAllProductCateg
 app()->post('/crear-publicacion-producto','ProductController@createProductPost');
 app()->get('/publicaciones-productos-activas','ProductController@getAvailableProducts');
 app()->get('/publicaciones-usuario/{user_id}','ProductController@getUserProducts');
-app()->get('/publicaciones-disponibles-para-usuario/{user_id}','ProductController@getUserAvailableProducts');
+app()->get('/productos-disponibles-para-usuario/{user_id}','ProductController@getUserAvailableProducts');
 app()->get('/productos-pendientes-aprobacion','ProductController@productsPendingApproval');
 app()->get('/producto/{id_producto}','ProductController@getProductById');
 

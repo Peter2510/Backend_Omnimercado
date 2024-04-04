@@ -64,7 +64,7 @@ class ProductController extends Controller
         try {
 
             $products = Product::select('id_producto', 'titulo', 'precio_moneda_virtual', 'fecha_publicacion')
-                ->where('id_estado_producto', 3)
+                ->where('id_estado_producto', 2)
                 ->where('id_publicador', '!=', $user_id)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();
@@ -250,19 +250,11 @@ class ProductController extends Controller
     public function getProductById($id)
     {
         try {
-            $product = Product::findOrFail($id);
-            // Obtener las categorías asociadas al producto
-            // Obtener las categorías asociadas al producto
-            $productCategories = $product->ProductCategory;
-
-            // Crear un array para almacenar los nombres de las categorías
-            $categoryNames = [];
-
-            foreach ($productCategories as $productCategory) {
-                // Acceder al nombre del tipo de categoría y agregarlo al array
-                $categoryNames[] = $productCategory->categoryType->nombre;
-            }
             
+            $product = Product::join('tipo_condicion as tc', 'tc.id_tipo_condicion', '=', 'producto.tipo_condicion')
+            ->select('producto.*', 'tc.nombre as condicion')
+            ->findOrFail($id);
+
             $product->User;
 
             $product->User->makeHidden([
@@ -284,10 +276,8 @@ class ProductController extends Controller
 
             $product->unsetRelation('ProductCategory');
 
-            // Agregar solo los nombres de las categorías al producto
-            $product->category_names = $categoryNames;
-
             return response()->json(['status' => 'success', 'product' => $product], 200);
+
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
         } catch (\Exception $e) {

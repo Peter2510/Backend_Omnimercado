@@ -6,6 +6,7 @@ class Product extends Model
 {
     protected $table = 'producto';
     protected $primaryKey = 'id_producto';
+    
     protected $fillable = [
         'id_producto',
         'titulo',

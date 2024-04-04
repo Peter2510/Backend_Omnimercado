@@ -32,6 +32,11 @@ app()->get('/productos-disponibles-para-usuario/{user_id}','ProductController@ge
 app()->get('/productos-pendientes-aprobacion','ProductController@productsPendingApproval');
 app()->get('/producto/{id_producto}','ProductController@getProductById');
 
+app()->patch('/cambiar-estado-producto-a-pendiente/{id_producto}','ProductController@setProductToPending');
+app()->patch('/cambiar-estado-producto-a-disponible/{id_producto}','ProductController@setProductToAvailable');
+app()->patch('/cambiar-estado-producto-a-vendido/{id_producto}','ProductController@setProductToSold');
+app()->patch('/cambiar-estado-producto-a-rechazado/{id_producto}','ProductController@setProductToRejected');
+
 /*/ BARTER PRODUCTS */
 app()->post('/crear-publicacion-producto-trueque','BarterProductController@createBarterProduct');
 app()->get('/publicacion-producto-trueque/{id_publicacion}','BarterProductController@getBarterProductById');

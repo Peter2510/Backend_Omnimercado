@@ -250,10 +250,10 @@ class ProductController extends Controller
     public function getProductById($id)
     {
         try {
-            
+
             $product = Product::join('tipo_condicion as tc', 'tc.id_tipo_condicion', '=', 'producto.tipo_condicion')
-            ->select('producto.*', 'tc.nombre as condicion')
-            ->findOrFail($id);
+                ->select('producto.*', 'tc.nombre as condicion')
+                ->findOrFail($id);
 
             $product->User;
 
@@ -277,7 +277,6 @@ class ProductController extends Controller
             $product->unsetRelation('ProductCategory');
 
             return response()->json(['status' => 'success', 'product' => $product], 200);
-
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
         } catch (\Exception $e) {
@@ -285,4 +284,61 @@ class ProductController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error al obtener el producto'], 500);
         }
     }
+
+    function setProductToPending($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $product->id_estado_producto = 1;
+            $product->save();
+            return response()->json(['status' => 'success', 'message' => 'Producto actualizado a pendiente'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al cambiar el estado del producto'], 500);
+        }
+    }
+
+    function setProductToAvailable($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $product->id_estado_producto = 2;
+            $product->save();
+            return response()->json(['status' => 'success', 'message' => 'Producto actualizado a disponible'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al cambiar el estado del producto'], 500);
+        }
+    }
+
+    function setProductToSold($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $product->id_estado_producto = 3;
+            $product->save();
+            return response()->json(['status' => 'success', 'message' => 'Producto actualizado a vendido'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al cambiar el estado del producto'], 500);
+        }
+    }
+
+    function setProductToRejected($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $product->id_estado_producto = 4;
+            $product->save();
+            return response()->json(['status' => 'success', 'message' => 'Producto actualizado a rechazado'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al cambiar el estado del producto'], 500);
+        }
+    }
+
 }

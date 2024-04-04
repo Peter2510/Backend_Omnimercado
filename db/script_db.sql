@@ -388,9 +388,11 @@ INSERT INTO tipo_condicion(nombre,created_at,updated_at) VALUES
 ('Usado','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
 INSERT INTO estado_producto(nombre,created_at,updated_at) values
-('Oculto','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Pendiente','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Disponible','2024-03-08 07:15:30','2024-03-08 07:15:30'),
-('Vendido','2024-03-08 07:15:30','2024-03-08 07:15:30');
+('Vendido','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Rechazado','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Eliminado','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
 INSERT INTO genero (nombre) VALUES
 ('Masculino'),

@@ -172,6 +172,7 @@ CREATE TABLE voluntariado(
     maximo_edad INT NOT NULL,
     id_estado INT NOT NULL,
     id_publicador INT NOT NULL,
+    descripcion_retribucion TEXT NOT NULL,
     fecha_publicacion DATE NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
@@ -422,3 +423,14 @@ INSERT INTO tipo_categoria_producto(nombre,created_at,updated_at) values
 ('Educacion','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
 
+INSERT INTO estado_voluntariado(nombre,created_at,updated_at) VALUES
+('Pendiente','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Disponible','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Realizado','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Rechazado','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Eliminado','2024-03-08 07:15:30','2024-03-08 07:15:30');
+
+INSERT INTO tipo_categoria_voluntariado(nombre,created_at,updated_at) values
+('Salud','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Musica','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Educacion','2024-03-08 07:15:30','2024-03-08 07:15:30');

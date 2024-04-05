@@ -48,5 +48,9 @@ app()->get('/productos-intercambio-usuario/{user_id}','BarterProductController@g
 
 app()->get('/publicaciones-disponibles-para-usuario/{user_id}','BarterProductController@getUserAvailableBarterProducts');
 
+/*Volunteering*/
+app()->get('/obtener-categorias-voluntariados','VolunteeringsController@getAllVolunteeringCategories');
+
+
 
 

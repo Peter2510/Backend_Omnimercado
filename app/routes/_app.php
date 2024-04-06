@@ -50,7 +50,4 @@ app()->get('/publicaciones-disponibles-para-usuario/{user_id}','BarterProductCon
 
 /*Volunteering*/
 app()->get('/obtener-categorias-voluntariados','VolunteeringsController@getAllVolunteeringCategories');
-
-
-
-
+app()->post('/crear-voluntariado','VolunteeringsController@createVolunteering');

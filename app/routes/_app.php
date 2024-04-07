@@ -31,7 +31,6 @@ app()->get('/publicaciones-usuario/{user_id}','ProductController@getUserProducts
 app()->get('/productos-disponibles-para-usuario/{user_id}','ProductController@getUserAvailableProducts');
 app()->get('/productos-pendientes-aprobacion','ProductController@productsPendingApproval');
 app()->get('/producto/{id_producto}','ProductController@getProductById');
-
 app()->patch('/cambiar-estado-producto-a-pendiente/{id_producto}','ProductController@setProductToPending');
 app()->patch('/cambiar-estado-producto-a-disponible/{id_producto}','ProductController@setProductToAvailable');
 app()->patch('/cambiar-estado-producto-a-vendido/{id_producto}','ProductController@setProductToSold');
@@ -40,7 +39,6 @@ app()->patch('/cambiar-estado-producto-a-rechazado/{id_producto}','ProductContro
 /*/ BARTER PRODUCTS */
 app()->post('/crear-publicacion-producto-trueque','BarterProductController@createBarterProduct');
 app()->get('/publicacion-producto-trueque/{id_publicacion}','BarterProductController@getBarterProductById');
-
 app()->get('/publicaciones-intercambio-productos-activas','BarterProductController@getAvailableBarterProducts');
 app()->get('/productos-intercambio-pendientes-aprobacion','BarterProductController@barterProductsPendingApproval');
 app()->get('/productos-intercambio-usuario/{user_id}','BarterProductController@getUserBarterProducts');
@@ -51,3 +49,15 @@ app()->get('/publicaciones-disponibles-para-usuario/{user_id}','BarterProductCon
 /*Volunteering*/
 app()->get('/obtener-categorias-voluntariados','VolunteeringsController@getAllVolunteeringCategories');
 app()->post('/crear-voluntariado','VolunteeringsController@createVolunteering');
+
+app()->get('/voluntariados-activos','VolunteeringsController@getAvailableVolunteerings');
+app()->get('/voluntariados-usuario/{user_id}','VolunteeringsController@getUserVolunteerings');
+app()->get('/voluntariados-disponibles-para-usuario/{user_id}','VolunteeringsController@getUserAvailableVolunteering');
+app()->get('/voluntariados-pendientes-aprobacion','VolunteeringsController@volunteeringPendingApproval');
+app()->get('/voluntariado/{id_voluntariado}','VolunteeringsController@getVolunteeringById');
+
+
+app()->patch('/cambiar-estado-voluntariado-a-pendiente/{id_voluntariado}','VolunteeringsController@setVolunteeringToPending');
+app()->patch('/cambiar-estado-voluntariado-a-disponible/{id_voluntariado}','VolunteeringsController@setVolunteeringToAvailable');
+app()->patch('/cambiar-estado-voluntariado-a-vendido/{id_voluntariado}','VolunteeringsController@setVolunteeringToSold');
+app()->patch('/cambiar-estado-voluntariado-a-rechazado/{id_voluntariado}','VolunteeringsController@setVolunteeringToRejected');

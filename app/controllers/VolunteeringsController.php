@@ -97,4 +97,266 @@ class VolunteeringsController extends Controller
         }
     }
 
+
+    
+
+    function getAvailableVolunteerings()
+    {
+
+        try {
+            $volunteerings = Volunteering::select('id_voluntariado', 'titulo', 'fecha_publicacion')
+                ->where('id_estado', 2)
+                ->orderBy('fecha_publicacion', 'asc')
+                ->get();
+
+            foreach ($volunteerings as $volunteering) {
+                $image = $this->volunteeringImage($volunteering->id_voluntariado);
+                if ($image) {
+                    $volunteering['images'] = $image;
+                }
+            }
+
+            return response()->json(['status' => 'success', 'volunteerings' => $volunteerings], 200);
+        } catch (\Exception $e) {
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los voluntariados disponibles'], 500);
+        }
+    }
+
+    function getUserVolnteerings($user_id)
+    {
+
+        try {
+            $volunteerings = Volunteering::select('id_voluntariado', 'titulo', 'precio_moneda_virtual', 'id_estado_voluntariado', 'fecha_publicacion')
+                ->where('id_publicador', $user_id)
+                ->orderBy('fecha_publicacion', 'desc')
+                ->get();
+
+            foreach ($volunteerings as $volunteering) {
+                $image = $this->volunteeringImage($volunteering->id_voluntariado);
+                if ($image) {
+                    $volunteering['images'] = $image;
+                }
+            }
+
+            return response()->json(['status' => 'success', 'volunteerings' => $volunteerings], 200);
+        } catch (\Exception $e) {
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los voluntariados disponibles'], 500);
+        }
+    }
+
+
+    function getUserAvailableVolunteering($user_id)
+    {
+        try {
+
+            $volunteerings = Volunteering::select('id_voluntariado', 'titulo', 'fecha_publicacion')
+                ->where('id_estado', 2)
+                ->where('id_publicador', '!=', $user_id)
+                ->orderBy('fecha_publicacion', 'asc')
+                ->get();
+
+            foreach ($volunteerings as $volunteering) {
+                $image = $this->volunteeringImage($volunteering->id_voluntariado);
+                if ($image) {
+                    $volunteering['images'] = $image;
+                }
+            }
+
+            return response()->json(['status' => 'success', 'volunteerings' => $volunteerings], 200);
+        } catch (\Exception $e) {
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los voluntariados disponibles'], 500);
+        }
+    }
+
+    function volunteeringImage($id)
+    {
+
+        $image_url = ImageVolunteering::select('url_imagen')->where('id_voluntariado', $id)->first();
+
+        if ($image_url) {
+
+            $pathImage = _env("STORAGE_VOLUNTEERINGS_IMAGES") . $image_url->url_imagen;
+
+            if (file_exists($pathImage)) {
+
+                $imageData = file_get_contents($pathImage);
+
+                $image_data_json = [
+                    'type' => FS::extension($pathImage),
+                    'image' => base64_encode($imageData)
+                ];
+
+                return $image_data_json;
+            }
+        }
+
+        return null;
+    }
+
+    function volunteeringImages($id)
+    {
+
+        $image_urls = ImageVolunteering::select('url_imagen')->where('id_voluntariado', $id)->get();
+
+        $url_list = $image_urls->pluck('url_imagen')->toArray();
+        $image_list = [];
+
+        foreach ($url_list as $url) {
+            $pathImage = _env("STORAGE_VOLUNTEERINGS_IMAGES") . $url;
+
+            if (file_exists($pathImage)) {
+
+                $imageData = file_get_contents($pathImage);
+
+                $image_data_json = [
+                    'type' => FS::extension($pathImage),
+                    'image' => base64_encode($imageData)
+                ];
+
+                $image_list[] = $image_data_json;
+            }
+        }
+
+        return $image_list;
+    }
+
+    public function volunteeringPendingApproval()
+    {
+        try {
+            $volunteerings = Volunteering::select('id_voluntariado', 'titulo', 'fecha_publicacion')
+                ->where('id_estado', 1)
+                ->orderBy('fecha_publicacion', 'asc')
+                ->get();
+
+            foreach ($volunteerings as $volunteering) {
+                $image = $this->volunteeringImage($volunteering->id_voluntariado);
+                if ($image) {
+                    $volunteering['images'] = $image;
+                }
+            }
+
+            return response()->json(['status' => 'success', 'volunteerings' => $volunteerings], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los voluntariados disponibles'], 500);
+        }
+    }
+
+    public function getVolunteeringById($id)
+    {
+        try {
+
+            $volunteering = Volunteering::findOrFail($id);
+
+            $volunteering->User;
+
+            $volunteering->User->makeHidden([
+                'fecha_nacimiento',
+                'moneda_local_gastada',
+                'moneda_local_ganada',
+                'cantidad_moneda_virtual',
+                'moneda_virtual_ganada',
+                'moneda_virtual_gastada',
+                'promedio_valoracion',
+                'activo_publicar',
+                'activo_plataforma',
+                'genero',
+                'url_imagen'
+            ]);
+
+            $images = $this->volunteeringImages($volunteering->id_voluntariado);
+            $volunteering->images = $images;
+
+            return response()->json(['status' => 'success', 'volunteering' => $volunteering], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Voluntariado no encontrado'], 404);
+        } catch (\Exception $e) {
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener el voluntariado'], 500);
+        }
+    }
+
+    function setVolunteeringToPending($id)
+    {
+        try {
+            $volunteering = Volunteering::findOrFail($id);
+            $volunteering->id_estado = 1;
+            $volunteering->save();
+            return response()->json(['status' => 'success', 'message' => 'Voluntariado actualizado a pendiente'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Voluntariado no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al cambiar el estado del voluntariado'], 500);
+        }
+    }
+
+    function setVolunteeringToAvailable($id)
+    {
+        try {
+            $volunteering = volunteering::findOrFail($id);
+            $volunteering->id_estado = 2;
+            $volunteering->save();
+            return response()->json(['status' => 'success', 'message' => 'voluntariado actualizado a disponible'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'voluntariado no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al cambiar el estado del voluntariado'], 500);
+        }
+    }
+
+    
+    function setVolunteeringToRealized($id)
+    {
+        try {
+            $volunteering = volunteering::findOrFail($id);
+            $volunteering->id_estado = 3;
+            $volunteering->save();
+            return response()->json(['status' => 'success', 'message' => 'voluntariado actualizado a vendido'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'voluntariado no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al cambiar el estado del voluntariado'], 500);
+        }
+    }
+
+    function setvolunteeringToRejected($id)
+    {
+        try {
+            $volunteering = volunteering::findOrFail($id);
+            $volunteering->id_estado = 4;
+            $volunteering->save();
+            return response()->json(['status' => 'success', 'message' => 'voluntariado actualizado a rechazado'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'voluntariado no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al cambiar el estado del voluntariado'], 500);
+        }
+    }
+
+
+    function getUserVolunteerings($user_id)
+    {
+        try {
+            $volunteerings = Volunteering::select('id_voluntariado', 'titulo', 'fecha_publicacion','id_estado')
+                ->where('id_publicador', $user_id)
+                ->orderBy('fecha_publicacion', 'desc')
+                ->get();
+
+            foreach ($volunteerings as $volunteering) {
+                $image = $this->volunteeringImage($volunteering->id_voluntariado);
+                if ($image) {
+                    $volunteering['images'] = $image;
+                }
+            }
+            
+            return response()->json(['status' => 'success', 'volunteerings' => $volunteerings], 200);
+        } catch (\Exception $e) {
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los voluntariados disponibles'], 500);
+        }
+    }
+
+
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 class Volunteering extends Model
 {
     protected $table = 'voluntariado';
+    protected $primaryKey = 'id_voluntariado';
 
     protected $fillable = [
         'id_voluntariado',
@@ -23,4 +24,16 @@ class Volunteering extends Model
         'fecha_publicacion',
         'descripcion_retribucion'
     ];
+
+
+
+    function imageVolunteering() {
+        return $this->hasMany(ImageVolunteering::class,'id_voluntariado','id_voluntariado');
+    }
+
+    public function User()
+    {
+        return $this->belongsTo(User::class, 'id_publicador', 'id_usuario');
+    }
+
 }

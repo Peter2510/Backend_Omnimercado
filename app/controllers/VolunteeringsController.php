@@ -321,7 +321,7 @@ class VolunteeringsController extends Controller
         }
     }
 
-    function setvolunteeringToRejected($id)
+    function setVolunteeringToRejected($id)
     {
         try {
             $volunteering = volunteering::findOrFail($id);

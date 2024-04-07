@@ -23,4 +23,9 @@ class BarterProduct extends Model
         return $this->hasMany(ImageBarterProduct::class,'id_producto_trueque','id_producto_trueque');
     }
 
+    public function User()
+    {
+        return $this->belongsTo(User::class, 'id_publicador', 'id_usuario');
+    }
+
 }

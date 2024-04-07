@@ -225,15 +225,110 @@ class BarterProductController extends Controller
         }
     }
 
-    public function getBarterProductById($id){
+    public function getBarterProductById($id)
+    {
         try {
-            $barterProduct = BarterProduct::findOrFail($id); 
-            $barterProduct->images = $this->barterProductImages($barterProduct->id_producto_trueque);
-            return response()->json(['status'=>'success','barterProduct'=>$barterProduct], 200);
+
+            $barterProduct = BarterProduct::join('tipo_condicion as tc', 'tc.id_tipo_condicion', '=', 'producto_trueque.id_condicion')
+            ->select('producto_trueque.*', 'tc.nombre as condicion')
+            ->findOrFail($id);
+
+            $barterProduct->User;
+
+            $barterProduct->User->makeHidden([
+                'fecha_nacimiento',
+                'moneda_local_gastada',
+                'moneda_local_ganada',
+                'cantidad_moneda_virtual',
+                'moneda_virtual_ganada',
+                'moneda_virtual_gastada',
+                'promedio_valoracion',
+                'activo_publicar',
+                'activo_plataforma',
+                'genero',
+                'url_imagen'
+            ]);
+
+            $images = $this->barterProductImages($barterProduct->id_producto_trueque);
+            $barterProduct->images = $images;
+
+            return response()->json(['status' => 'success', 'barterProduct' => $barterProduct], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json(['status' => 'error', 'message' => 'Intercambio no encontrado'], 404);
+            return response()->json(['status' => 'error', 'message' => 'Publicación no encontrada'], 404);
         } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => 'Error al obtener el intercambio'], 500);
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener el publicación'], 500);
+        }
+    }
+
+    function setBarterProductToPending($id)
+    {
+        try {
+            $barterProduct = BarterProduct::findOrFail($id);
+            $barterProduct->id_estado = 1;
+            $barterProduct->save();
+            return response()->json(['status' => 'success', 'message' => 'Publicación actualizada a pendiente'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Publicación no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al cambiar el estado de la publicación'], 500);
+        }
+    }
+
+    function setBarterProductToAvailable($id)
+    {
+        try {
+            $barterProduct = BarterProduct::findOrFail($id);
+            $barterProduct->id_estado = 2;
+            $barterProduct->save();
+            return response()->json(['status' => 'success', 'message' => 'Publicación actualizada a disponible'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Publicación no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al cambiar el estado de la publicacion'], 500);
+        }
+    }
+
+    
+    function setBarterProductToRealized($id)
+    {
+        try {
+            $barterProduct = BarterProduct::findOrFail($id);
+            $barterProduct->id_estado = 3;
+            $barterProduct->save();
+            return response()->json(['status' => 'success', 'message' => 'Publicación actualizada a realizado'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Publicación no encontrada'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al cambiar el estado de la publicación'], 500);
+        }
+    }
+
+    function setBarterProductToRejected($id)
+    {
+        try {
+            $barterProduct = BarterProduct::findOrFail($id);
+            $barterProduct->id_estado = 4;
+            $barterProduct->save();
+            return response()->json(['status' => 'success', 'message' => 'Publicación actualizada a rechazado'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Publicación no encontrada'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al cambiar el estado de la publicación'], 500);
+        }
+    }
+
+    function setBarterProductToDeleted($id)
+    {
+        try {
+            $barterProduct = BarterProduct::findOrFail($id);
+            $barterProduct->id_estado = 5;
+            $barterProduct->save();
+            return response()->json(['status' => 'success', 'message' => 'Publicación actualizada a eliminado'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Publicación no encontrada'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al cambiar el estado de la publicación'], 500);
         }
     }
 

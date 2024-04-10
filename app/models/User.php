@@ -22,7 +22,8 @@ class User extends Model{
         'activo_publicar',
         'activo_plataforma', 
         'url_imagen',
-        'genero'
+        'genero',
+        'informacion_visible_para_todos'
     ];
 
     public function gender() {

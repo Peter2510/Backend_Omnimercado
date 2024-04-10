@@ -52,7 +52,7 @@ class UserController extends Controller{
 
         try {
             
-            $user = $user = User::select('usuario.nombre', 'correo', 'fecha_nacimiento', 'cantidad_moneda_virtual', 'genero.nombre as genero')
+            $user = $user = User::select('usuario.nombre', 'correo', 'fecha_nacimiento', 'cantidad_moneda_virtual', 'genero.nombre as genero','informacion_visible_para_todos')
             ->leftJoin('genero', 'usuario.genero', '=', 'genero.id_genero')
             ->where('id_usuario', $user_id)
             ->first();
@@ -66,5 +66,24 @@ class UserController extends Controller{
         }
         
     }
+
+    function updateUser($user_id) {
+        try {
+            $user = User::find($user_id);
+            if (!$user) {
+                return response()->json(['status' => 'error', 'message' => 'Usuario no encontrado'], 404);
+            }
+    
+            $user->informacion_visible_para_todos = app()->request()->get('state');
+            $user->save();
+            
+            return response()->json(['status' => 'success', 'message' => 'Usuario actualizado exitosamente'], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
+      
+            
 
 }

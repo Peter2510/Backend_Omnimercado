@@ -16,6 +16,7 @@ app()->get('/ver-imagen','Admin_UserController@response_image');
 /** USER */
 app()->post('/crear-usuario','UserController@createUser');
 app()->get('/perfil-usuario/{user_id}','UserController@userProfile');
+app()->post('/actualizar-perfil-usuario/{user_id}','UserController@updateUser');
 
 /** ADMIN */
 app()->get('/obtener-roles-administrativo','AdminController@getRoles');

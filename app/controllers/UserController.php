@@ -86,7 +86,6 @@ class UserController extends Controller{
         }
     }
 
-    //get coins user
     function getCoins($user_id){
         try {
             $user = User::select('cantidad_moneda_virtual')
@@ -99,6 +98,7 @@ class UserController extends Controller{
             return response()->json(['status' => 'error', 'message' => 'Error al obtener las monedas del usuario'], 500);
         }
     }
-            
+
+              
 
 }

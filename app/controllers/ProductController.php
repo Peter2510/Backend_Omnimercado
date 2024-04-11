@@ -460,4 +460,28 @@ class ProductController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error al realizar la venta'], 500);
         }
     }
+
+
+    function getUserPurchaseProducts($user_id)
+    {
+        try {
+            $products = Product::select('producto.id_producto', 'producto.titulo', 'producto.precio_moneda_virtual', 'venta.fecha_venta')
+                ->join('venta', 'producto.id_producto', '=', 'venta.id_producto')
+                ->where('venta.id_comprador', $user_id)
+                ->orderBy('venta.fecha_venta', 'desc')
+                ->get();
+
+            foreach ($products as $product) {
+                $image = $this->productImage($product->id_producto);
+                if ($image) {
+                    $product['images'] = $image;
+                }
+            }
+
+            return response()->json(['status' => 'success', 'products' => $products], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos comprados'], 500);
+        }
+    }
+
 }

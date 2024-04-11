@@ -343,4 +343,16 @@ class BarterProductController extends Controller
         }
     }
 
+
+    function countBarterProductsPendingApproval()
+    {
+        try {
+            $count = BarterProduct::where('id_estado', 1)->count();
+
+            return response()->json(['status' => 'success', 'count' => $count], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener la cantidad de intercambios pendientes'], 500);
+        }
+    }
+
 }

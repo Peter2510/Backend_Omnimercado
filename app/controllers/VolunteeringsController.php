@@ -108,9 +108,6 @@ class VolunteeringsController extends Controller
         }
     }
 
-
-    
-
     function getAvailableVolunteerings()
     {
 
@@ -369,5 +366,15 @@ class VolunteeringsController extends Controller
         }
     }
 
+    function countVolunteeringsPendingApproval()
+    {
+        try {
+            $count = Volunteering::where('id_estado', 1)->count();
+
+            return response()->json(['status' => 'success', 'count' => $count], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener la cantidad de voluntarios pendientes'], 500);
+        }
+    }
 
 }

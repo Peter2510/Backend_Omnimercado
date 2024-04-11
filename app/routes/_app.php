@@ -36,23 +36,21 @@ app()->patch('/cambiar-estado-producto-a-pendiente/{id_producto}','ProductContro
 app()->patch('/cambiar-estado-producto-a-disponible/{id_producto}','ProductController@setProductToAvailable');
 app()->patch('/cambiar-estado-producto-a-vendido/{id_producto}','ProductController@setProductToSold');
 app()->patch('/cambiar-estado-producto-a-rechazado/{id_producto}','ProductController@setProductToRejected');
+app()->get('/cantidad-productos-pendientes-aprobacion','ProductController@countProductsPendingApproval');
 
 /*/ BARTER PRODUCTS */
 app()->get('/publicacion-producto-trueque/{id_publicacion}','BarterProductController@getBarterProductById');
-
 app()->post('/crear-publicacion-producto-trueque','BarterProductController@createBarterProduct');
-
 app()->get('/publicaciones-intercambio-productos-activas','BarterProductController@getAvailableBarterProducts');
 app()->get('/productos-intercambio-pendientes-aprobacion','BarterProductController@barterProductsPendingApproval');
 app()->get('/productos-intercambio-usuario/{user_id}','BarterProductController@getUserBarterProducts');
-
 app()->get('/publicaciones-disponibles-para-usuario/{user_id}','BarterProductController@getUserAvailableBarterProducts');
-
 app()->patch('/cambiar-estado-publicacion-intercambio-a-pendiente/{id_producto_trueque}','BarterProductController@setBarterProductToPending');
 app()->patch('/cambiar-estado-publicacion-intercambio-a-disponible/{id_producto_trueque}','BarterProductController@setBarterProductToAvailable');
 app()->patch('/cambiar-estado-publicacion-intercambio-a-realizado/{id_producto_trueque}','BarterProductController@setBarterProductToRealized');
 app()->patch('/cambiar-estado-publicacion-intercambio-a-rechazado/{id_producto_trueque}','BarterProductController@setBarterProductToRejected');
 app()->patch('/cambiar-estado-publicacion-intercambio-a-eliminado/{id_producto_trueque}','BarterProductController@setBarterProductToDeleted');
+app()->get('/cantidad-intercambios-pendientes-aprobacion','BarterProductController@countBarterProductsPendingApproval');
 
 /*Volunteering*/
 app()->get('/obtener-categorias-voluntariados','VolunteeringsController@getAllVolunteeringCategories');
@@ -67,3 +65,7 @@ app()->patch('/cambiar-estado-voluntariado-a-pendiente/{id_voluntariado}','Volun
 app()->patch('/cambiar-estado-voluntariado-a-disponible/{id_voluntariado}','VolunteeringsController@setVolunteeringToAvailable');
 app()->patch('/cambiar-estado-voluntariado-a-vendido/{id_voluntariado}','VolunteeringsController@setVolunteeringToSold');
 app()->patch('/cambiar-estado-voluntariado-a-rechazado/{id_voluntariado}','VolunteeringsController@setVolunteeringToRejected');
+app()->get('/cantidad-voluntariados-pendientes-aprobacion','VolunteeringsController@countVolunteeringsPendingApproval');
+
+
+app()->get('/cantidad-publicaciones-pendientes-aprobacion','ReportsController@countPostPendingApproval');

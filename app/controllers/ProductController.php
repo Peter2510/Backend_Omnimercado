@@ -356,4 +356,16 @@ class ProductController extends Controller
         }
     }
 
+
+    function countProductsPendingApproval()
+    {
+        try {
+            $count = Product::where('id_estado_producto', 1)->count();
+
+            return response()->json(['status' => 'success', 'count' => $count], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener la cantidad productos pendientes'], 500);
+        }
+    }
+
 }

@@ -54,7 +54,7 @@ class UserController extends Controller{
 
         try {
             
-            $user = $user = User::select('usuario.nombre', 'correo', 'fecha_nacimiento', 'cantidad_moneda_virtual', 'genero.nombre as genero','informacion_visible_para_todos')
+            $user = $user = User::select('usuario.nombre', 'correo', 'fecha_nacimiento', 'cantidad_moneda_virtual', 'genero.nombre as genero','informacion_visible_para_todos','credito')
             ->leftJoin('genero', 'usuario.genero', '=', 'genero.id_genero')
             ->where('id_usuario', $user_id)
             ->first();
@@ -85,7 +85,20 @@ class UserController extends Controller{
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
-      
+
+    //get coins user
+    function getCoins($user_id){
+        try {
+            $user = User::select('cantidad_moneda_virtual')
+            ->where('id_usuario', $user_id)
+            ->first();
+
+            return response()->json(['status' => 'success', 'coins' => $user], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener las monedas del usuario'], 500);
+        }
+    }
             
 
 }

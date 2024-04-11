@@ -17,11 +17,13 @@ app()->get('/ver-imagen','Admin_UserController@response_image');
 app()->post('/crear-usuario','UserController@createUser');
 app()->get('/perfil-usuario/{user_id}','UserController@userProfile');
 app()->post('/actualizar-perfil-usuario/{user_id}','UserController@updateUser');
+app()->get('/obtener-cantidad-monedas/{user_id}','UserController@getCoins');
 
 /** ADMIN */
 app()->get('/obtener-roles-administrativo','AdminController@getRoles');
 app()->post('/crear-admin','AdminController@createAdmin');
 app()->get('/perfil-admin/{user_id}','AdminController@adminProfile');
+
 
 /** PRODUCTS */
 app()->get('/obtener-condicion-productos','ProductController@getAllProductConditionType');

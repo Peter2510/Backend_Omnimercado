@@ -449,7 +449,7 @@ class ProductController extends Controller
                 $product->id_estado_producto = 3;
                 $product->save();
 
-                return response()->json(['status' => 'success', 'message' => 'Compra realizada'], 200);
+                return response()->json(['status' => 'success', 'message' => 'Compra realizada','userCoin'=>$user -> cantidad_moneda_virtual], 200);
 
             }
 

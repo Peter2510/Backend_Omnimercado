@@ -3,8 +3,10 @@
 namespace App\Controllers;
 
 use App\Models\BarterProduct;
+use App\Models\Restriction;
 use App\Models\BarterProductCategory;
 use App\Models\ImageBarterProduct;
+use App\Models\User;
 use Leaf\FS;
 
 
@@ -149,10 +151,19 @@ class BarterProductController extends Controller
             $barterProduct->id_publicador = app()->request()->get('id_user');
             $active_to_publish = app()->request()->get('active_to_publish');
 
-            if ($active_to_publish == 1) {
+            $numberPublications = BarterProduct::where('id_publicador', app()->request()->get('id_user'))->where('id_estado',2)->count();
+            $minimumPublications = Restriction::where('id_restriccion', 1)->first()->cantidad;
+
+            if ($numberPublications >= $minimumPublications) {
                 $barterProduct->id_estado = 2; //Disponible
-            } else if ($active_to_publish == 0) {
+                //update state user
+                $user = User::findOrFail(app()->request()->get('id_user'));
+                $user->activo_publicar = 1;
+                $user->save();
+                $message = 'Publicación realizada';
+            } else{
                 $barterProduct->id_estado = 1; //Oculto
+                $message = 'Publicacion pendiente de aprobacion';
             }
 
             $barterProduct->save();
@@ -195,7 +206,7 @@ class BarterProductController extends Controller
                 $category->save();
             }
 
-            return response()->json(['status' => 'success', 'message' => 'Publicación de intercambio realizada'], 200);
+            return response()->json(['status' => 'success', 'message' => $message], 200);
 
         } catch (\Exception $e) {
             echo $e;

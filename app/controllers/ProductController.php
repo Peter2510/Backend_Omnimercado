@@ -7,6 +7,8 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductCategoryType;
 use App\Models\ProductConditionType;
+use App\Models\Restriction;
+use App\Models\User;
 use Leaf\FS;
 
 class ProductController extends Controller
@@ -164,6 +166,7 @@ class ProductController extends Controller
     {
 
         try {
+            $message = '';
             $product = new Product;
             $product->titulo = app()->request()->get('title');
             $product->precio_moneda_virtual = app()->request()->get('virtualCoin');
@@ -174,10 +177,21 @@ class ProductController extends Controller
             $product->id_publicador = app()->request()->get('id_user');
             $active_to_publish = app()->request()->get('active_to_publish');
 
-            if ($active_to_publish == 1) {
+            
+            //select count(*) from producto where id_publicador = 1 and id_estado_producto=2;
+            $numberPublications = Product::where('id_publicador', app()->request()->get('id_user'))->where('id_estado_producto',2)->count();
+            $minimumPublications = Restriction::where('id_restriccion', 1)->first()->cantidad;
+
+            if ($numberPublications >= $minimumPublications) {
                 $product->id_estado_producto = 2; //Disponible
-            } else if ($active_to_publish == 0) {
+                //update state user
+                $user = User::findOrFail(app()->request()->get('id_user'));
+                $user->activo_publicar = 1;
+                $user->save();
+                $message = 'Publicación realizada';
+            } else{
                 $product->id_estado_producto = 1; //Oculto
+                $message = 'Publicacion pendiente de aprobacion';
             }
 
             $product->save();
@@ -220,8 +234,9 @@ class ProductController extends Controller
                 $category->save();
             }
 
-            return response()->json(['status' => 'success', 'message' => 'Publicación realizada'], 200);
+            return response()->json(['status' => 'success', 'message' => $message], 200);
         } catch (\Exception $e) {
+            echo $e;
             return response()->json(['status' => 'error', 'message' => 'Error al crear la publicacion'], 500);
         }
     }

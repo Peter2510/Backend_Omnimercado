@@ -381,7 +381,7 @@ CREATE TABLE trueque(
     FOREIGN KEY (id_comprador) REFERENCES usuario(id_usuario)
 );
 
-INSERT INTO restriccion(tipo, cantidad,created_at,updated_at) VALUES ('Aprobaciones minimas para productos',5,'2024-03-08 07:15:30','2024-03-08 07:15:30');
+INSERT INTO restriccion(tipo, cantidad,created_at,updated_at) VALUES ('Aprobaciones minimas',5,'2024-03-08 07:15:30','2024-03-08 07:15:30');
 
 INSERT INTO rol(nombre,created_at,updated_at) VALUES ('Administrador General','2024-03-08 07:15:30','2024-03-08 07:15:30');
 

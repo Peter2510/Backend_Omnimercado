@@ -6,6 +6,8 @@ use App\Models\ImageVolunteering;
 use App\Models\Volunteering;
 use App\Models\VolunteeringCategory;
 use App\Models\VolunteeringCategoryType;
+use App\Models\User;
+use App\Models\Restriction;
 use Leaf\FS;
 
 class VolunteeringsController extends Controller
@@ -41,10 +43,19 @@ class VolunteeringsController extends Controller
             $active_to_publish = app()->request()->get('active_to_publish');
             $volunteering->fecha_publicacion = date("Y-m-d");
 
-            if ($active_to_publish == 1) {
+            $numberPublications = Volunteering::where('id_publicador', app()->request()->get('id_user'))->where('id_estado',2)->count();
+            $minimumPublications = Restriction::where('id_restriccion', 1)->first()->cantidad;
+
+            if ($numberPublications >= $minimumPublications) {
                 $volunteering->id_estado = 2; //Disponible
-            } else if ($active_to_publish == 0) {
-                $volunteering->id_estado = 1; //Pendiente
+                //update state user
+                $user = User::findOrFail(app()->request()->get('id_user'));
+                $user->activo_publicar = 1;
+                $user->save();
+                $message = 'Publicación realizada';
+            } else{
+                $volunteering->id_estado = 1; //Oculto
+                $message = 'Publicacion pendiente de aprobacion';
             }
 
             $volunteering->save();
@@ -89,7 +100,7 @@ class VolunteeringsController extends Controller
                 $category->save();
             }
 
-            return response()->json(['status' => 'success', 'message' => 'Voluntariado realizado'], 200);
+            return response()->json(['status' => 'success', 'message' => $message], 200);
 
         } catch (\Exception $e) {
             echo $e;

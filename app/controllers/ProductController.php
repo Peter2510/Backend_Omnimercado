@@ -8,6 +8,7 @@ use App\Models\ProductCategory;
 use App\Models\ProductCategoryType;
 use App\Models\ProductConditionType;
 use App\Models\Restriction;
+use App\Models\Sale;
 use App\Models\User;
 use Leaf\FS;
 
@@ -177,9 +178,9 @@ class ProductController extends Controller
             $product->id_publicador = app()->request()->get('id_user');
             $active_to_publish = app()->request()->get('active_to_publish');
 
-            
+
             //select count(*) from producto where id_publicador = 1 and id_estado_producto=2;
-            $numberPublications = Product::where('id_publicador', app()->request()->get('id_user'))->where('id_estado_producto',2)->count();
+            $numberPublications = Product::where('id_publicador', app()->request()->get('id_user'))->where('id_estado_producto', 2)->count();
             $minimumPublications = Restriction::where('id_restriccion', 1)->first()->cantidad;
 
             if ($numberPublications >= $minimumPublications) {
@@ -189,7 +190,7 @@ class ProductController extends Controller
                 $user->activo_publicar = 1;
                 $user->save();
                 $message = 'Publicación realizada';
-            } else{
+            } else {
                 $product->id_estado_producto = 1; //Oculto
                 $message = 'Publicacion pendiente de aprobacion';
             }
@@ -368,4 +369,95 @@ class ProductController extends Controller
         }
     }
 
+    function getPriceProduct($id)
+    {
+        try {
+            $product = Product::select('precio_moneda_virtual')->where('id_producto', $id)->first();
+            return response()->json(['status' => 'success', 'price' => $product->precio_moneda_virtual], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener el precio del producto'], 500);
+        }
+    }
+
+    function createSale()
+    {
+        try {
+            $product = Product::findOrFail(app()->request()->get('product_id'));
+
+
+            $user = User::findOrFail(app()->request()->get('user_id'));
+            $coins = $user->cantidad_moneda_virtual;
+
+
+            if ($product->precio_moneda_virtual > $coins) {
+
+                //Maximum credit
+                $maximumCredit = floatval(Restriction::where('id_restriccion', 2)->first()->cantidad);
+
+                //validate current user credit 
+                if($user->credito > $maximumCredit){
+                    return response()->json(['status' => 'error', 'message' => 'Ya excediste el crédito permitido de ' . $maximumCredit], 402);
+                }
+                
+                //calculate credit
+                $credit = $product->precio_moneda_virtual - $coins;
+
+
+                //calculate new credit
+                $newCredit = $user->credito + $credit;
+
+                //validate new credit
+                if($newCredit > $maximumCredit){
+                    return response()->json(['status' => 'error', 'message' => 'No puedes realizar la compra, el credito permitido es de ' . $maximumCredit. ' y con la compra llegarias a '. $newCredit], 402);
+                }
+                
+                //update user credit
+                $user->cantidad_moneda_virtual = 0;
+                $user->credito = $newCredit;
+                
+                //save sale
+                $sale = new Sale;
+                $sale->id_producto = app()->request()->get('product_id');
+                $sale->id_comprador = app()->request()->get('user_id');
+                $sale->fecha_venta = date("Y-m-d");
+                $sale->save();
+
+                //update product state
+                $product->id_estado_producto = 3;
+                $product->save();
+                                
+                $user->moneda_virtual_gastada = $user->moneda_virtual_gastada + $product->precio_moneda_virtual;
+                $user->save();
+
+                return response()->json(['status' => 'success', 'message' => 'Compra realizada, se actualizó tu credito'], 200);
+
+            }else{
+                
+                //update user coins
+                $user->cantidad_moneda_virtual = $coins - $product->precio_moneda_virtual;
+                $user->moneda_virtual_gastada = $user->moneda_virtual_gastada + $product->precio_moneda_virtual;
+                $user->save();
+
+                //save sale
+                $sale = new Sale;
+                $sale->id_producto = app()->request()->get('product_id');
+                $sale->id_comprador = app()->request()->get('user_id');
+                $sale->fecha_venta = date("Y-m-d");
+                $sale->save();
+
+                //update product state
+                $product->id_estado_producto = 3;
+                $product->save();
+
+                return response()->json(['status' => 'success', 'message' => 'Compra realizada'], 200);
+
+            }
+
+            
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al realizar la venta'], 500);
+        }
+    }
 }

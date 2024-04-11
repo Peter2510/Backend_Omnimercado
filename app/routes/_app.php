@@ -37,6 +37,9 @@ app()->patch('/cambiar-estado-producto-a-disponible/{id_producto}','ProductContr
 app()->patch('/cambiar-estado-producto-a-vendido/{id_producto}','ProductController@setProductToSold');
 app()->patch('/cambiar-estado-producto-a-rechazado/{id_producto}','ProductController@setProductToRejected');
 app()->get('/cantidad-productos-pendientes-aprobacion','ProductController@countProductsPendingApproval');
+app()->get('/precio-producto/{id_producto}','ProductController@getPriceProduct');
+app()->post('/crear-venta','ProductController@createSale');
+
 
 /*/ BARTER PRODUCTS */
 app()->get('/publicacion-producto-trueque/{id_publicacion}','BarterProductController@getBarterProductById');

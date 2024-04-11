@@ -23,7 +23,8 @@ class User extends Model{
         'activo_plataforma', 
         'url_imagen',
         'genero',
-        'informacion_visible_para_todos'
+        'informacion_visible_para_todos',
+        'credito'
     ];
 
     public function gender() {

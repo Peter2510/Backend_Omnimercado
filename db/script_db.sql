@@ -52,6 +52,7 @@ CREATE TABLE usuario(
     moneda_local_gastada DECIMAL(8,2) NOT NULL,
     moneda_local_ganada DECIMAL(8,2) NOT NULL,
     cantidad_moneda_virtual DECIMAL(8,2) NOT NULL,
+    credito DECIMAL(8,2) NOT NULL,
     moneda_virtual_ganada DECIMAL(8,2) NOT NULL,
     moneda_virtual_gastada DECIMAL(8,2) NOT NULL,
     promedio_valoracion DECIMAL(3,1)NOT NULL,
@@ -381,7 +382,11 @@ CREATE TABLE trueque(
     FOREIGN KEY (id_comprador) REFERENCES usuario(id_usuario)
 );
 
-INSERT INTO restriccion(tipo, cantidad,created_at,updated_at) VALUES ('Aprobaciones minimas',5,'2024-03-08 07:15:30','2024-03-08 07:15:30');
+INSERT INTO restriccion(tipo, cantidad,created_at,updated_at) VALUES 
+('Aprobaciones minimas',5,'2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Credito maximo','30','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Divisa','0.4','2024-03-08 07:15:30','2024-03-08 07:15:30');
+
 
 INSERT INTO rol(nombre,created_at,updated_at) VALUES ('Administrador General','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
@@ -400,8 +405,8 @@ INSERT INTO genero (nombre) VALUES
 ('Masculino'),
 ('Femenino');
 
-INSERT INTO usuario (nombre,correo,fecha_nacimiento,contrasenia,moneda_local_gastada,moneda_local_ganada,cantidad_moneda_virtual,moneda_virtual_ganada,moneda_virtual_gastada,promedio_valoracion,activo_publicar,activo_plataforma,url_imagen,created_at,updated_at,genero,informacion_visible_para_todos) VALUES
-	 ('Pedro','c1@correo.com','2000-01-01',0x24327924313024393367376F4268696C6D716561593373396F4A4A496537374A6541656631503369575935724472754844704B4D5479636C4D343632,0.00,0.00,5.00,0.00,0.00,0.0,0,1,'usuario.png','2024-03-08 07:15:30','2024-03-08 07:15:30',1,0);
+INSERT INTO usuario (nombre,correo,fecha_nacimiento,contrasenia,moneda_local_gastada,moneda_local_ganada,cantidad_moneda_virtual,moneda_virtual_ganada,moneda_virtual_gastada,promedio_valoracion,activo_publicar,activo_plataforma,url_imagen,created_at,updated_at,genero,informacion_visible_para_todos,credito) VALUES
+	 ('Pedro','c1@correo.com','2000-01-01',0x24327924313024393367376F4268696C6D716561593373396F4A4A496537374A6541656631503369575935724472754844704B4D5479636C4D343632,0.00,0.00,5.00,0.00,0.00,0.0,0,1,'usuario.png','2024-03-08 07:15:30','2024-03-08 07:15:30',1,0,0);
 
 INSERT INTO administrativo(nombre,correo,rol,url_imagen,activo,created_at,updated_at,contrasenia,genero) values 
 ('Ricardo','c2@correo.com',1,'admin.png',1,'2024-03-08 07:15:30','2024-03-08 07:15:30',0x24327924313024393367376F4268696C6D716561593373396F4A4A496537374A6541656631503369575935724472754844704B4D5479636C4D343632,1);

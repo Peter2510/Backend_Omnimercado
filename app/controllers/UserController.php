@@ -23,6 +23,8 @@ class UserController extends Controller{
             $user->moneda_virtual_gastada = 0;
             $user->promedio_valoracion = 0;
             $user->activo_publicar = 0;
+            $user->informacion_visible_para_todos = 0;
+            $user->credito = 0;
             $user->activo_plataforma = _env('ACTIVE_USER_DEFAULT');
             
             $file = app()->request()->files("photo");

@@ -385,7 +385,7 @@ CREATE TABLE trueque(
 INSERT INTO restriccion(tipo, cantidad,created_at,updated_at) VALUES 
 ('Aprobaciones minimas',5,'2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Credito maximo','30','2024-03-08 07:15:30','2024-03-08 07:15:30'),
-('Divisa','0.4','2024-03-08 07:15:30','2024-03-08 07:15:30');
+('Divisa','0.5','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
 
 INSERT INTO rol(nombre,created_at,updated_at) VALUES ('Administrador General','2024-03-08 07:15:30','2024-03-08 07:15:30');

@@ -4,6 +4,7 @@ namespace App\Controllers;
 use App\Models\User;
 use Leaf\FS;
 use App\Controllers\Admin_UserController;
+use App\Models\Restriction;
 
 class UserController extends Controller{
 
@@ -99,6 +100,40 @@ class UserController extends Controller{
         }
     }
 
-              
+    function chargeCoins(){
+        try {
+
+
+            $user_id = app()->request()->get('user_id');
+            $user = User::find($user_id);
+            if (!$user) {
+                return response()->json(['status' => 'error', 'message' => 'Usuario no encontrado'], 404);
+            }
+
+            $money = app()->request()->get('money');
+            $badge = Restriction::find(3)->cantidad;
+            $convertion = $money * $badge;
+
+            $user->cantidad_moneda_virtual = $user->cantidad_moneda_virtual + $convertion;
+            $user->moneda_local_gastada = $user->moneda_local_gastada + $money;
+            $user->save();
+
+            
+            return response()->json(['status' => 'success', 'message' => 'Monedas actualizadas exitosamente'], 200);
+    
+        } catch (\Exception $e) {
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al recargar monedas'], 500);
+        }
+    }          
+
+    function getBadge(){
+        try {
+            $badge = Restriction::find(3)->cantidad;
+            return response()->json(['status' => 'success', 'badge' => $badge], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener la divisa'], 500);
+        }
+    }
 
 }

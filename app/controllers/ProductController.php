@@ -379,6 +379,16 @@ class ProductController extends Controller
         }
     }
 
+    function getStateProduct($id)
+    {
+        try {
+            $product = Product::select('id_estado_producto')->where('id_producto', $id)->first();
+            return response()->json(['status' => 'success', 'state' => $product->precio_moneda_virtual], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener el estado del producto'], 500);
+        }
+    }
+
     function createSale()
     {
         try {
@@ -395,10 +405,10 @@ class ProductController extends Controller
                 $maximumCredit = floatval(Restriction::where('id_restriccion', 2)->first()->cantidad);
 
                 //validate current user credit 
-                if($user->credito > $maximumCredit){
+                if ($user->credito > $maximumCredit) {
                     return response()->json(['status' => 'error', 'message' => 'Ya excediste el crédito permitido de ' . $maximumCredit], 402);
                 }
-                
+
                 //calculate credit
                 $credit = $product->precio_moneda_virtual - $coins;
 
@@ -407,14 +417,14 @@ class ProductController extends Controller
                 $newCredit = $user->credito + $credit;
 
                 //validate new credit
-                if($newCredit > $maximumCredit){
-                    return response()->json(['status' => 'error', 'message' => 'No puedes realizar la compra, el credito permitido es de ' . $maximumCredit. ' y con la compra llegarias a '. $newCredit], 402);
+                if ($newCredit > $maximumCredit) {
+                    return response()->json(['status' => 'error', 'message' => 'No puedes realizar la compra, el credito permitido es de ' . $maximumCredit . ' y con la compra llegarias a ' . $newCredit], 402);
                 }
-                
+
                 //update user credit
                 $user->cantidad_moneda_virtual = 0;
                 $user->credito = $newCredit;
-                
+
                 //save sale
                 $sale = new Sale;
                 $sale->id_producto = app()->request()->get('product_id');
@@ -425,14 +435,33 @@ class ProductController extends Controller
                 //update product state
                 $product->id_estado_producto = 3;
                 $product->save();
-                                
+
                 $user->moneda_virtual_gastada = $user->moneda_virtual_gastada + $product->precio_moneda_virtual;
                 $user->save();
 
-                return response()->json(['status' => 'success', 'message' => 'Compra realizada, se actualizó tu credito'], 200);
+                //upate user seller
+                $userSeller = User::findOrFail($product->id_publicador);
+                $userSeller->cantidad_moneda_virtual = $userSeller->cantidad_moneda_virtual + $product->precio_moneda_virtual;
+                $userSeller->moneda_virtual_ganada = $userSeller->moneda_virtual_ganada + $product->precio_moneda_virtual;
+                $userSeller->save();
 
-            }else{
-                
+                //creditPayment
+                if ($userSeller->credito > 0) {
+
+                    if ($product->precio_moneda_virtual > $userSeller->credito) {
+                        $userSeller->cantidad_moneda_virtual = $userSeller->cantidad_moneda_virtual - $userSeller->credito;
+                        $userSeller->credito = 0;
+                        $userSeller->save();
+                    } else {
+                        $userSeller->cantidad_moneda_virtual = $userSeller->cantidad_moneda_virtual - ($userSeller->credito / 2);
+                        $userSeller->credito = $userSeller->credito - ($userSeller->credito / 2);
+                        $userSeller->save();
+                    }
+                }
+
+                return response()->json(['status' => 'success', 'message' => 'Compra realizada, se actualizó tu credito'], 200);
+            } else {
+
                 //update user coins
                 $user->cantidad_moneda_virtual = $coins - $product->precio_moneda_virtual;
                 $user->moneda_virtual_gastada = $user->moneda_virtual_gastada + $product->precio_moneda_virtual;
@@ -449,11 +478,29 @@ class ProductController extends Controller
                 $product->id_estado_producto = 3;
                 $product->save();
 
-                return response()->json(['status' => 'success', 'message' => 'Compra realizada','userCoin'=>$user -> cantidad_moneda_virtual], 200);
+                //upate user seller
+                $userSeller = User::findOrFail($product->id_publicador);
+                $userSeller->cantidad_moneda_virtual = $userSeller->cantidad_moneda_virtual + $product->precio_moneda_virtual;
+                $userSeller->moneda_virtual_ganada = $userSeller->moneda_virtual_ganada + $product->precio_moneda_virtual;
+                $userSeller->save();
 
+
+                //creditPayment
+                if ($userSeller->credito > 0) {
+
+                    if ($product->precio_moneda_virtual > $userSeller->credito) {
+                        $userSeller->cantidad_moneda_virtual = $userSeller->cantidad_moneda_virtual - $userSeller->credito;
+                        $userSeller->credito = 0;
+                        $userSeller->save();
+                    } else {
+                        $userSeller->cantidad_moneda_virtual = $userSeller->cantidad_moneda_virtual - ($userSeller->credito / 2);
+                        $userSeller->credito = $userSeller->credito - ($userSeller->credito / 2);
+                        $userSeller->save();
+                    }
+                }
+
+                return response()->json(['status' => 'success', 'message' => 'Compra realizada', 'userCoin' => $user->cantidad_moneda_virtual], 200);
             }
-
-            
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
         } catch (\Exception $e) {
@@ -483,5 +530,4 @@ class ProductController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos comprados'], 500);
         }
     }
-
 }

@@ -18,6 +18,8 @@ app()->post('/crear-usuario','UserController@createUser');
 app()->get('/perfil-usuario/{user_id}','UserController@userProfile');
 app()->post('/actualizar-perfil-usuario/{user_id}','UserController@updateUser');
 app()->get('/obtener-cantidad-monedas/{user_id}','UserController@getCoins');
+app()->post('/recargar-monedas','UserController@chargeCoins');
+app()->get('/obtener-divisa','UserController@getBadge');
 
 
 /** ADMIN */
@@ -41,6 +43,7 @@ app()->patch('/cambiar-estado-producto-a-vendido/{id_producto}','ProductControll
 app()->patch('/cambiar-estado-producto-a-rechazado/{id_producto}','ProductController@setProductToRejected');
 app()->get('/cantidad-productos-pendientes-aprobacion','ProductController@countProductsPendingApproval');
 app()->get('/precio-producto/{id_producto}','ProductController@getPriceProduct');
+app()->get('/estado-producto/{id_producto}','ProductController@getStateProduct');
 app()->post('/crear-venta','ProductController@createSale');
 app()->get('/obtener-compras-usuario/{user_id}','ProductController@getUserPurchaseProducts');
 

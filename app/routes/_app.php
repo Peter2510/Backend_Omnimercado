@@ -76,6 +76,6 @@ app()->patch('/cambiar-estado-voluntariado-a-disponible/{id_voluntariado}','Volu
 app()->patch('/cambiar-estado-voluntariado-a-vendido/{id_voluntariado}','VolunteeringsController@setVolunteeringToSold');
 app()->patch('/cambiar-estado-voluntariado-a-rechazado/{id_voluntariado}','VolunteeringsController@setVolunteeringToRejected');
 app()->get('/cantidad-voluntariados-pendientes-aprobacion','VolunteeringsController@countVolunteeringsPendingApproval');
-
+app()->get('/estado-voluntariado/{id_voluntariado}','VolunteeringsController@getStateVolunteering');
 
 app()->get('/cantidad-publicaciones-pendientes-aprobacion','ReportsController@countPostPendingApproval');

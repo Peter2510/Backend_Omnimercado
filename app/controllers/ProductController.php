@@ -383,7 +383,7 @@ class ProductController extends Controller
     {
         try {
             $product = Product::select('id_estado_producto')->where('id_producto', $id)->first();
-            return response()->json(['status' => 'success', 'state' => $product->precio_moneda_virtual], 200);
+            return response()->json(['status' => 'success', 'state' => $product->id_estado_producto], 200);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Error al obtener el estado del producto'], 500);
         }

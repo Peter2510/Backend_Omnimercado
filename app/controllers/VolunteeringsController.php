@@ -8,6 +8,7 @@ use App\Models\VolunteeringCategory;
 use App\Models\VolunteeringCategoryType;
 use App\Models\User;
 use App\Models\Restriction;
+use App\Models\VoluntaryRegistration;
 use Leaf\FS;
 
 class VolunteeringsController extends Controller
@@ -24,11 +25,12 @@ class VolunteeringsController extends Controller
     }
 
 
-    public function createVolunteering(){
+    public function createVolunteering()
+    {
 
         try {
             $volunteering = new Volunteering;
-            $volunteering->codigo_pago = app()->request()->get('codigo_pago');            
+            $volunteering->codigo_pago = app()->request()->get('codigo_pago');
             $volunteering->titulo = app()->request()->get('titulo');
             $volunteering->retribucion_moneda_virtual = app()->request()->get('retribucion_moneda_virtual');
             $volunteering->descripcion = app()->request()->get('descripcion');
@@ -43,65 +45,161 @@ class VolunteeringsController extends Controller
             $active_to_publish = app()->request()->get('active_to_publish');
             $volunteering->fecha_publicacion = date("Y-m-d");
 
-            $numberPublications = Volunteering::where('id_publicador', app()->request()->get('id_user'))->where('id_estado',2)->count();
-            $minimumPublications = Restriction::where('id_restriccion', 1)->first()->cantidad;
 
-            if ($numberPublications >= $minimumPublications) {
-                $volunteering->id_estado = 2; //Disponible
-                //update state user
-                $user = User::findOrFail(app()->request()->get('id_user'));
-                $user->activo_publicar = 1;
-                $user->save();
-                $message = 'Publicación realizada';
-            } else{
-                $volunteering->id_estado = 1; //Oculto
-                $message = 'Publicacion pendiente de aprobacion';
-            }
+            $volunteeringPrice = app()->request()->get('retribucion_moneda_virtual') * app()->request()->get('maximo_voluntariados');
+            $user = User::findOrFail(app()->request()->get('id_user'));
 
-            $volunteering->save();
-            $idVolunteering = $volunteering->getKey();
+            if ($user->cantidad_moneda_virtual < $volunteeringPrice) {
 
-            //Save images
-            $file = app()->request()->files("photo");
-            
 
-            if ($file != null) {
-                $count = 1;
-                foreach ($file['name'] as $index => $fileName) {
-                    $fileDetails = [
-                        'name' => $file['name'][$index],
-                        'full_path' => $file['full_path'][$index],
-                        'type' => $file['type'][$index],
-                        'tmp_name' => $file['tmp_name'][$index],
-                        'error' => $file['error'][$index],
-                        'size' => $file['size'][$index]
-                    ];
-                    $extension = explode("/", $fileDetails['type']);
-                    $image = new ImageVolunteering;
-                    $image->id_voluntariado = $idVolunteering;
-                    $fileDetails['name'] = $idVolunteering . "_" . $count . "." . $extension[1];
-                    $image->url_imagen = $fileDetails['name'];
-                    FS::uploadFile($fileDetails, _env("STORAGE_VOLUNTEERINGS_IMAGES"));
-                    $count++;
-                    $image->save();
+                //Maximum credit
+                $maximumCredit = floatval(Restriction::where('id_restriccion', 2)->first()->cantidad);
+
+                //validate current user credit 
+                if ($user->credito > $maximumCredit) {
+                    return response()->json(['status' => 'error', 'message' => 'Ya excediste el crédito permitido de ' . $maximumCredit], 402);
                 }
+
+                //calculate credit
+                $credit = $volunteeringPrice - $user->cantidad_moneda_virtual;
+
+
+                //calculate new credit
+                $newCredit = $user->credito + $credit;
+
+                //validate new credit
+                if ($newCredit > $maximumCredit) {
+                    return response()->json(['status' => 'error', 'message' => 'No puedes realizar la publicación, el credito permitido es de ' . $maximumCredit . ' y con la publicación llegarias a ' . $newCredit], 402);
+                }
+
+                //create volunteering
+                $user->cantidad_moneda_virtual = 0;
+                $user->credito = $newCredit;
+                $user->save();
+
+                $numberPublications = Volunteering::where('id_publicador', app()->request()->get('id_user'))->where('id_estado', 2)->count();
+                $minimumPublications = Restriction::where('id_restriccion', 1)->first()->cantidad;
+
+                if ($numberPublications >= $minimumPublications) {
+                    $volunteering->id_estado = 2; //Disponible
+                    //update state user
+                    $user = User::findOrFail(app()->request()->get('id_user'));
+                    $user->activo_publicar = 1;
+                    $user->save();
+                    $message = 'Publicación realizada, se actualizo el credito';
+                } else {
+                    $volunteering->id_estado = 1; //Oculto
+                    $message = 'Publicacion pendiente de aprobacion, se actualizo el credito';
+                }
+
+                $volunteering->save();
+                $idVolunteering = $volunteering->getKey();
+
+                //Save images
+                $file = app()->request()->files("photo");
+
+
+                if ($file != null) {
+                    $count = 1;
+                    foreach ($file['name'] as $index => $fileName) {
+                        $fileDetails = [
+                            'name' => $file['name'][$index],
+                            'full_path' => $file['full_path'][$index],
+                            'type' => $file['type'][$index],
+                            'tmp_name' => $file['tmp_name'][$index],
+                            'error' => $file['error'][$index],
+                            'size' => $file['size'][$index]
+                        ];
+                        $extension = explode("/", $fileDetails['type']);
+                        $image = new ImageVolunteering;
+                        $image->id_voluntariado = $idVolunteering;
+                        $fileDetails['name'] = $idVolunteering . "_" . $count . "." . $extension[1];
+                        $image->url_imagen = $fileDetails['name'];
+                        FS::uploadFile($fileDetails, _env("STORAGE_VOLUNTEERINGS_IMAGES"));
+                        $count++;
+                        $image->save();
+                    }
+                } else {
+                    return response()->json(['status' => 'error', 'message' => 'Error al crear la publicacion del voluntariado'], 500);
+                }
+
+                //Save categories
+                $categories = app()->request()->get('id_categories');
+
+
+                foreach ($categories as $categoryId) {
+                    $category = new VolunteeringCategory;
+                    $category->id_voluntariado = $idVolunteering;
+                    $category->id_tipo_categoria = $categoryId;
+                    $category->save();
+                }
+
+                return response()->json(['status' => 'success', 'message' => $message,'userCoin',$user->cantidad_moneda_virtual], 200);
+
             } else {
-                return response()->json(['status' => 'error', 'message' => 'Error al crear la publicacion de intercambio'], 500);
+
+                $numberPublications = Volunteering::where('id_publicador', app()->request()->get('id_user'))->where('id_estado', 2)->count();
+                $minimumPublications = Restriction::where('id_restriccion', 1)->first()->cantidad;
+
+                if ($numberPublications >= $minimumPublications) {
+                    $volunteering->id_estado = 2; //Disponible
+                    //update state user
+                    $user = User::findOrFail(app()->request()->get('id_user'));
+                    $user->activo_publicar = 1;
+                    $user->save();
+                    $message = 'Publicación realizada';
+                } else {
+                    $volunteering->id_estado = 1; //Oculto
+                    $message = 'Publicacion pendiente de aprobacion';
+                }
+
+                $volunteering->save();
+                $idVolunteering = $volunteering->getKey();
+
+                //Save images
+                $file = app()->request()->files("photo");
+
+
+                if ($file != null) {
+                    $count = 1;
+                    foreach ($file['name'] as $index => $fileName) {
+                        $fileDetails = [
+                            'name' => $file['name'][$index],
+                            'full_path' => $file['full_path'][$index],
+                            'type' => $file['type'][$index],
+                            'tmp_name' => $file['tmp_name'][$index],
+                            'error' => $file['error'][$index],
+                            'size' => $file['size'][$index]
+                        ];
+                        $extension = explode("/", $fileDetails['type']);
+                        $image = new ImageVolunteering;
+                        $image->id_voluntariado = $idVolunteering;
+                        $fileDetails['name'] = $idVolunteering . "_" . $count . "." . $extension[1];
+                        $image->url_imagen = $fileDetails['name'];
+                        FS::uploadFile($fileDetails, _env("STORAGE_VOLUNTEERINGS_IMAGES"));
+                        $count++;
+                        $image->save();
+                    }
+                } else {
+                    return response()->json(['status' => 'error', 'message' => 'Error al crear la publicacion del voluntariado'], 500);
+                }
+
+                //Save categories
+                $categories = app()->request()->get('id_categories');
+
+
+                foreach ($categories as $categoryId) {
+                    $category = new VolunteeringCategory;
+                    $category->id_voluntariado = $idVolunteering;
+                    $category->id_tipo_categoria = $categoryId;
+                    $category->save();
+                }
+
+                $user->cantidad_moneda_virtual = $user->cantidad_moneda_virtual - $volunteeringPrice;
+                $user->save();
+
+                return response()->json(['status' => 'success', 'message' => $message], 200);
             }
-
-            //Save categories
-            $categories = app()->request()->get('id_categories');
-            
-
-            foreach ($categories as $categoryId) {
-                $category = new VolunteeringCategory;
-                $category->id_voluntariado = $idVolunteering;
-                $category->id_tipo_categoria = $categoryId;
-                $category->save();
-            }
-
-            return response()->json(['status' => 'success', 'message' => $message], 200);
-
         } catch (\Exception $e) {
             echo $e;
             return response()->json(['status' => 'error', 'message' => $e], 500);
@@ -314,7 +412,7 @@ class VolunteeringsController extends Controller
         }
     }
 
-    
+
     function setVolunteeringToRealized($id)
     {
         try {
@@ -347,7 +445,7 @@ class VolunteeringsController extends Controller
     function getUserVolunteerings($user_id)
     {
         try {
-            $volunteerings = Volunteering::select('id_voluntariado', 'titulo', 'fecha_publicacion','id_estado')
+            $volunteerings = Volunteering::select('id_voluntariado', 'titulo', 'fecha_publicacion', 'id_estado')
                 ->where('id_publicador', $user_id)
                 ->orderBy('fecha_publicacion', 'desc')
                 ->get();
@@ -358,7 +456,7 @@ class VolunteeringsController extends Controller
                     $volunteering['images'] = $image;
                 }
             }
-            
+
             return response()->json(['status' => 'success', 'volunteerings' => $volunteerings], 200);
         } catch (\Exception $e) {
             echo $e;
@@ -374,6 +472,36 @@ class VolunteeringsController extends Controller
             return response()->json(['status' => 'success', 'count' => $count], 200);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Error al obtener la cantidad de voluntarios pendientes'], 500);
+        }
+    }
+
+    function volunteerRegistration()
+    {
+        try {
+
+            $volunteeringId = app()->request()->get('id_voluntariado');
+            $userId = app()->request()->get('id_user');
+
+            $registration = new VoluntaryRegistration;
+            $registration->id_voluntariado = $volunteeringId;
+            $registration->id_colaborador = $userId;
+            $registration->voluntario_asistio = 0;
+            $registration->save();
+
+            return response()->json(['status' => 'success', 'message' => 'Registrado al voluntariado'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al registrarse al voluntariado'], 500);
+        }
+    }
+
+    function getStateVolunteering($id)
+    {
+        try {
+            $volunteering = Volunteering::select('id_estado')->where('id_voluntariado', $id)->first();
+
+            return response()->json(['status' => 'success', 'state' => $volunteering->id_estado], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener el estado del voluntariado'], 500);
         }
     }
 

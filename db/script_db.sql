@@ -434,9 +434,31 @@ INSERT INTO estado_voluntariado(nombre,created_at,updated_at) VALUES
 ('Disponible','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Realizado','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Rechazado','2024-03-08 07:15:30','2024-03-08 07:15:30'),
-('Eliminado','2024-03-08 07:15:30','2024-03-08 07:15:30');
+('Eliminado','2024-03-08 07:15:30','2024-03-08 07:15:30')
+('Finalizado','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
 INSERT INTO tipo_categoria_voluntariado(nombre,created_at,updated_at) values
 ('Salud','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Musica','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Educacion','2024-03-08 07:15:30','2024-03-08 07:15:30');
+
+
+DELIMITER //
+
+CREATE PROCEDURE actualizar_estado_voluntariado()
+BEGIN
+    UPDATE voluntariado
+    SET id_estado = 6
+    WHERE fecha <= CURDATE() AND hora <= CURTIME();
+END//
+
+DELIMITER ;
+
+
+CREATE EVENT IF NOT EXISTS actualizar_estado_evento
+ON SCHEDULE EVERY 1 DAY
+STARTS CURRENT_TIMESTAMP
+DO
+    CALL actualizar_estado_voluntariado();
+
+

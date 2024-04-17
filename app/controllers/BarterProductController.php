@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\Barter;
 use App\Models\BarterProduct;
 use App\Models\Restriction;
 use App\Models\BarterProductCategory;
@@ -64,8 +65,8 @@ class BarterProductController extends Controller
     {
         try {
 
-            $barterProducts = BarterProduct::select('id_producto_trueque', 'titulo', 'precio_moneda_virtual', 'fecha_publicacion')
-                ->where('id_estado_producto', 3)
+            $barterProducts = BarterProduct::select('id_producto_trueque', 'titulo', 'equivalente_moneda_virtual','equivalente_moneda_local', 'fecha_publicacion')
+                ->where('id_estado', 2)
                 ->where('id_publicador', '!=', $user_id)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();
@@ -352,6 +353,61 @@ class BarterProductController extends Controller
             return response()->json(['status' => 'success', 'count' => $count], 200);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Error al obtener la cantidad de intercambios pendientes'], 500);
+        }
+    }
+
+    function getStateBarterProduct($id)
+    {
+        try {
+            $product = BarterProduct::select('id_estado')->where('id_producto_trueque', $id)->first();
+            return response()->json(['status' => 'success', 'state' => $product->id_estado], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener el estado del intercambio'], 500);
+        }
+    }
+
+    function createBarter(){
+        try{
+
+            $barter = new Barter;
+            $barter->id_producto_trueque = app()->request()->get('barter_product_id');
+            $barter->id_comprador = app()->request()->get('user_id');
+            $barter->fecha_trueque = date("Y-m-d");
+            $barter->save();
+
+            //update barter product
+            $barterProduct = BarterProduct::findOrFail(app()->request()->get('barter_product_id'));
+            $barterProduct->id_estado = 3;
+            $barterProduct->save();
+            
+            return response()->json(['status' => 'success', 'message' => 'Intercambio registrado'], 200);
+
+
+        }catch(\Exception $e){
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al crear el intercambio'], 500);
+        }
+    }
+
+    function getUserExchanges($user_id){
+        try{
+            $exchanges = BarterProduct::join('trueque as t', 't.id_producto_trueque', '=', 'producto_trueque.id_producto_trueque')
+            ->select('producto_trueque.id_producto_trueque', 'producto_trueque.titulo', 'producto_trueque.equivalente_moneda_local', 'producto_trueque.equivalente_moneda_virtual', 'producto_trueque.fecha_publicacion', 't.fecha_trueque')
+            ->where('t.id_comprador', $user_id)
+            ->orderBy('t.fecha_trueque', 'desc')
+            ->get();
+
+            foreach ($exchanges as $exchange) {
+                $image = $this->barterProductImage($exchange->id_producto_trueque);
+                if ($image) {
+                    $exchange['images'] = $image;
+                }
+            }
+
+            return response()->json(['status' => 'success', 'exchanges' => $exchanges], 200);
+
+        }catch(\Exception $e){
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los intercambios'], 500);
         }
     }
 

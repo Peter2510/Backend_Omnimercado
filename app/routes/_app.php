@@ -47,6 +47,14 @@ app()->get('/precio-producto/{id_producto}','ProductController@getPriceProduct')
 app()->get('/estado-producto/{id_producto}','ProductController@getStateProduct');
 app()->post('/crear-venta','ProductController@createSale');
 app()->get('/obtener-compras-usuario/{user_id}','ProductController@getUserPurchaseProducts');
+app()->get('/obtener-productos-con-reporte','ProductController@getProductsActiveReports');
+
+app()->get('/obtener-reportes-producto/{id_product}','ProductController@getReportsProduct');
+
+app()->patch('/aceptar-reportes-producto/{id_product}','ProductController@aproveReports');
+app()->patch('/rechazar-reportes-producto/{id_product}','ProductController@rejectReports');
+
+
 
 
 
@@ -71,9 +79,11 @@ app()->post('/reportar-producto-trueque','ReportsController@createReportBarter')
 app()->post('/reportar-producto','ReportsController@createReportProduct');
 app()->post('/reportar-voluntariado','ReportsController@createReportVolunteering');
 
-
 app()->post('/crear-intercambio','BarterProductController@createBarter');
 app()->get('/obtener-intercambios-usuario/{user_id}','BarterProductController@getUserExchanges');
+
+app()->get('/obtener-intercambios-con-reporte','BarterProductController@getBartersActiveReports');
+
 
 /*Volunteering*/
 app()->get('/obtener-categorias-voluntariados','VolunteeringsController@getAllVolunteeringCategories');
@@ -93,6 +103,10 @@ app()->get('/estado-voluntariado/{id_voluntariado}','VolunteeringsController@get
 app()->get('/restricciones-voluntariado/{id_voluntariado}','VolunteeringsController@getRestricionVolunteering');
 app()->post('/registro-voluntariado','VolunteeringsController@volunteerRegistration');
 app()->get('/voluntariados-registro-usuario/{id_voluntariado}','VolunteeringsController@userVolunteerRegistrations');
+
+app()->get('/obtener-voluntariados-con-reporte','VolunteeringsController@getVolunteeringsActiveReports');
+
+
 
 app()->post('/usuario-registrado-voluntariado','VolunteeringsController@validateIfUserIsRegistered');
 

@@ -563,5 +563,29 @@ class VolunteeringsController extends Controller
         }
     }
 
+    function getVolunteeringsActiveReports()
+{
+    try {
+        $volunteerings = Volunteering::select('voluntariado.id_voluntariado', 'voluntariado.titulo', 'voluntariado.fecha_publicacion')
+            ->join('reporte_voluntariado', 'voluntariado.id_voluntariado', '=', 'reporte_voluntariado.id_voluntariado')
+            ->where('reporte_voluntariado.validado', 0)
+            ->orderBy('voluntariado.fecha_publicacion', 'asc')
+            ->distinct() 
+            ->get();
+
+        foreach ($volunteerings as $voluntariado) {
+            $image = $this->volunteeringImage($voluntariado->id_voluntariado);
+            if ($image) {
+                $voluntariado['images'] = $image;
+            }
+        }
+
+        return response()->json(['status' => 'success', 'volunteerings' => $volunteerings], 200);
+    } catch (\Exception $e) {
+        echo $e;
+        return response()->json(['status' => 'error', 'message' => 'Error al obtener los voluntariados con reportes activos'], 500);
+    }
+}
+
 
 }

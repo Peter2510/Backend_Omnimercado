@@ -411,4 +411,28 @@ class BarterProductController extends Controller
         }
     }
 
+    function getBartersActiveReports()
+    {
+        try {
+            $barters = BarterProduct::select('producto_trueque.id_producto_trueque', 'producto_trueque.titulo', 'producto_trueque.fecha_publicacion')
+                ->join('reporte_producto_trueque', 'producto_trueque.id_producto_trueque', '=', 'reporte_producto_trueque.id_producto_trueque')
+                ->where('reporte_producto_trueque.validado', 0)
+                ->orderBy('producto_trueque.fecha_publicacion', 'asc')
+                ->distinct()
+                ->get();
+
+            foreach ($barters as $barter) {
+                $image = $this->barterProductImage($barter->id_producto_trueque);
+                if ($image) {
+                    $barter['images'] = $image;
+                }
+            }
+
+            return response()->json(['status' => 'success', 'barters' => $barters], 200);
+        } catch (\Exception $e) {
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los intercambios con reportes activos'], 500);
+        }
+    }
+
 }

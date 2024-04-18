@@ -10,6 +10,7 @@ class ReportVolunteering extends Model
     protected $fillable = [
         'id_categoria_reporte',
         'id_voluntariado',
+        'validado'
     ];
     
 }

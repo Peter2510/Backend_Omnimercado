@@ -10,6 +10,7 @@ class ReportCategory extends Model
     // Definición de atributos de la tabla
     protected $fillable = [
         'id_categoria_reporte',
-        'nombre'
+        'nombre',
+        'validado'
     ];
 }

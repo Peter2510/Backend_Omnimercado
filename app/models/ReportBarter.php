@@ -10,6 +10,7 @@ class ReportBarter extends Model
     protected $fillable = [
         'id_categoria_reporte',
         'id_producto_trueque',
+        'validado'
     ];
     
 }

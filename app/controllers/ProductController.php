@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductCategoryType;
 use App\Models\ProductConditionType;
+use App\Models\ReportProduct;
 use App\Models\Restriction;
 use App\Models\Sale;
 use App\Models\User;
@@ -530,4 +531,80 @@ class ProductController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos comprados'], 500);
         }
     }
+
+    //get products with active reports
+    function getProductsActiveReports()
+    {
+        try {
+            $products = Product::select('producto.id_producto', 'producto.titulo', 'producto.fecha_publicacion')
+                ->join('reporte_producto', 'producto.id_producto', '=', 'reporte_producto.id_producto')
+                ->where('reporte_producto.validado', 0)
+                ->orderBy('producto.fecha_publicacion', 'asc')
+                ->distinct()
+                ->get();
+
+            foreach ($products as $product) {
+                $image = $this->productImage($product->id_producto);
+                if ($image) {
+                    $product['images'] = $image;
+                }
+            }
+
+            return response()->json(['status' => 'success', 'products' => $products], 200);
+        } catch (\Exception $e) {
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los productos con reportes activos'], 500);
+        }
+    }
+
+    //get all reports of a product
+    function getReportsProduct($id)
+    {
+
+        try {
+            $reportes = ReportProduct::where('id_producto', $id)
+                ->join('categoria_reporte', 'reporte_producto.id_categoria_reporte', '=', 'categoria_reporte.id_categoria_reporte')
+                ->select('reporte_producto.*', 'categoria_reporte.nombre as nombre_categoria_reporte','reporte_producto.created_at as fecha_reporte')
+                ->get();
+            
+            return response()->json(['status' => 'success', 'reportes' => $reportes], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los reportes del producto'], 500);
+        }
+    }
+
+    function aproveReports()
+    {
+        try {
+            $id = app()->request()->get('id_product');
+            $product = Product::findOrFail($id);
+            $product->id_estado_producto = 4;
+            $product->save();
+
+            //update table reporte_producto, set validado = 1
+            ReportProduct::where('id_producto', $id)->update(['validado' => 1]);
+
+
+            return response()->json(['status' => 'success', 'message' => 'Producto invalidado'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al invalidar el producto'], 500);
+        }
+    }
+
+    function rejectReports(){
+        try {
+            $id = app()->request()->get('id_product');
+            
+            //update table reporte_producto, set validado = 1
+            ReportProduct::where('id_producto', $id)->update(['validado' => 1]);
+            return response()->json(['status' => 'success', 'message' => 'Producto no invalidado'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al no invalidar el producto'], 500);
+        }
+    }
+
 }

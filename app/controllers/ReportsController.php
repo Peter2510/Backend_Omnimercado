@@ -57,6 +57,7 @@ class ReportsController extends Controller
                  $report = new ReportBarter;
                  $report->id_categoria_reporte = $categoryId;
                  $report->id_producto_trueque = $idProduct;
+                 $report->validado = 0;
                 $report->save();
              }
             
@@ -81,12 +82,14 @@ class ReportsController extends Controller
                  $report = new ReportProduct;
                  $report->id_categoria_reporte = $categoryId;
                  $report->id_producto = $idProduct;
+                 $report->validado = 0;
                 $report->save();
              }
             
 
             return response()->json(['status' => 'success', 'message' => 'Reporte creado correctamente'], 200);
         } catch (\Exception $e) {
+            echo $e;
             return response()->json(['status' => 'error', 'message' => 'Error al crear el reporte'], 500);
         }
     }
@@ -105,6 +108,7 @@ class ReportsController extends Controller
                  $report = new ReportVolunteering();
                  $report->id_categoria_reporte = $categoryId;
                  $report->id_voluntariado = $idVolunteering;
+                 $report->validado = 0;
                 $report->save();
              }
             
@@ -114,5 +118,12 @@ class ReportsController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error al crear el reporte'], 500);
         }
     }
+
+    
+
+
+    
+
+
 
 }

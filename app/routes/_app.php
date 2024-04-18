@@ -67,7 +67,9 @@ app()->patch('/cambiar-estado-publicacion-intercambio-a-eliminado/{id_producto_t
 app()->get('/cantidad-intercambios-pendientes-aprobacion','BarterProductController@countBarterProductsPendingApproval');
 app()->get('/estado-intercambio/{id_producto_trueque}','BarterProductController@getStateBarterProduct');
 
-app()->post('/reportar-producto-trueque','ReportsController@createReport');
+app()->post('/reportar-producto-trueque','ReportsController@createReportBarter');
+app()->post('/reportar-producto','ReportsController@createReportProduct');
+app()->post('/reportar-voluntariado','ReportsController@createReportVolunteering');
 
 
 app()->post('/crear-intercambio','BarterProductController@createBarter');

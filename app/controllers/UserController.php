@@ -136,4 +136,29 @@ class UserController extends Controller{
         }
     }
 
+    function getAge($id){
+        try {
+            $user = User::select('fecha_nacimiento')
+            ->where('id_usuario', $id)
+            ->first();
+
+            $date = $user->fecha_nacimiento;
+            $date = explode("-", $date);
+            $year = $date[0];
+            $month = $date[1];
+            $day = $date[2];
+            $age = date("Y") - $year;
+            if (date("m") < $month || (date("m") == $month && date("d") < $day)) {
+                $age--;
+            }
+
+            return response()->json(['status' => 'success', 'age' => $age], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener la edad'], 500);
+        }
+    }
+
+    
+
 }

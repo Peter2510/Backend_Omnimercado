@@ -257,9 +257,10 @@ class VolunteeringsController extends Controller
     {
         try {
 
-            $volunteerings = Volunteering::select('id_voluntariado', 'titulo', 'fecha_publicacion')
+            $volunteerings = Volunteering::select('id_voluntariado', 'titulo', 'fecha_publicacion','maximo_edad','minimo_edad')
                 ->where('id_estado', 2)
                 ->where('id_publicador', '!=', $user_id)
+                ->where('id_estado', '!=', 7)
                 ->orderBy('fecha_publicacion', 'asc')
                 ->get();
 
@@ -479,8 +480,8 @@ class VolunteeringsController extends Controller
     {
         try {
 
-            $volunteeringId = app()->request()->get('id_voluntariado');
-            $userId = app()->request()->get('id_user');
+            $volunteeringId = app()->request()->get('volunteering_id');
+            $userId = app()->request()->get('user_id');
 
             $registration = new VoluntaryRegistration;
             $registration->id_voluntariado = $volunteeringId;
@@ -488,9 +489,40 @@ class VolunteeringsController extends Controller
             $registration->voluntario_asistio = 0;
             $registration->save();
 
+            
+            //Validate if the maximum number of volunteers has been reached and if yes, change the volunteering status to full.
+            $volunteering = Volunteering::findOrFail($volunteeringId);
+            $voluntaryRegistrations = VoluntaryRegistration::where('id_voluntariado', $volunteeringId)->count();
+            if ($voluntaryRegistrations >= $volunteering->maximo_voluntariados) {
+                $volunteering->id_estado = 7;
+                $volunteering->save();
+            }
+
             return response()->json(['status' => 'success', 'message' => 'Registrado al voluntariado'], 200);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Error al registrarse al voluntariado'], 500);
+        }
+    }
+
+    function userVolunteerRegistrations($userId){
+        try {
+            $volunteerings = Volunteering::select('voluntariado.id_voluntariado', 'voluntariado.titulo', 'voluntariado.fecha_publicacion')
+                ->join('registro_voluntariado', 'voluntariado.id_voluntariado', '=', 'registro_voluntariado.id_voluntariado')
+                ->where('registro_voluntariado.id_colaborador', $userId)
+                ->orderBy('voluntariado.fecha_publicacion', 'desc')
+                ->get();
+
+            foreach ($volunteerings as $volunteering) {
+                $image = $this->volunteeringImage($volunteering->id_voluntariado);
+                if ($image) {
+                    $volunteering['images'] = $image;
+                }
+            }
+
+            return response()->json(['status' => 'success', 'volunteerings' => $volunteerings], 200);
+        } catch (\Exception $e) {
+            echo $e;
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los voluntariados disponibles'], 500);
         }
     }
 
@@ -504,5 +536,32 @@ class VolunteeringsController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error al obtener el estado del voluntariado'], 500);
         }
     }
+
+    function getRestricionVolunteering($id){
+        try {
+            $volunteering = Volunteering::select('minimo_edad','maximo_edad')->where('id_voluntariado', $id)->first();
+            return response()->json(['status' => 'success', 'volunteering' => $volunteering ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener el voluntariado'], 500);
+        }
+    }
+
+    function validateIfUserIsRegistered(){
+        try {
+
+            $volunteeringId = app()->request()->get('volunteering_id');
+            $userId = app()->request()->get('user_id');
+
+            $registration = VoluntaryRegistration::where('id_voluntariado', $volunteeringId)->where('id_colaborador', $userId)->first();
+            if($registration){
+                return response()->json(['status' => 'success', 'registrer' => 1], 200);
+            }else{
+                return response()->json(['status' => 'success', 'registrer' => 0], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al validar si el usuario esta registrado'], 500);
+        }
+    }
+
 
 }

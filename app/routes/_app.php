@@ -20,6 +20,7 @@ app()->post('/actualizar-perfil-usuario/{user_id}','UserController@updateUser');
 app()->get('/obtener-cantidad-monedas/{user_id}','UserController@getCoins');
 app()->post('/recargar-monedas','UserController@chargeCoins');
 app()->get('/obtener-divisa','UserController@getBadge');
+app()->get('/edad/{user_id}','UserController@getAge');
 
 
 /** ADMIN */
@@ -48,6 +49,9 @@ app()->post('/crear-venta','ProductController@createSale');
 app()->get('/obtener-compras-usuario/{user_id}','ProductController@getUserPurchaseProducts');
 
 
+
+
+
 /*/ BARTER PRODUCTS */
 app()->get('/publicacion-producto-trueque/{id_publicacion}','BarterProductController@getBarterProductById');
 app()->post('/crear-publicacion-producto-trueque','BarterProductController@createBarterProduct');
@@ -62,6 +66,9 @@ app()->patch('/cambiar-estado-publicacion-intercambio-a-rechazado/{id_producto_t
 app()->patch('/cambiar-estado-publicacion-intercambio-a-eliminado/{id_producto_trueque}','BarterProductController@setBarterProductToDeleted');
 app()->get('/cantidad-intercambios-pendientes-aprobacion','BarterProductController@countBarterProductsPendingApproval');
 app()->get('/estado-intercambio/{id_producto_trueque}','BarterProductController@getStateBarterProduct');
+
+app()->post('/reportar-producto-trueque','ReportsController@createReport');
+
 
 app()->post('/crear-intercambio','BarterProductController@createBarter');
 app()->get('/obtener-intercambios-usuario/{user_id}','BarterProductController@getUserExchanges');
@@ -81,5 +88,18 @@ app()->patch('/cambiar-estado-voluntariado-a-vendido/{id_voluntariado}','Volunte
 app()->patch('/cambiar-estado-voluntariado-a-rechazado/{id_voluntariado}','VolunteeringsController@setVolunteeringToRejected');
 app()->get('/cantidad-voluntariados-pendientes-aprobacion','VolunteeringsController@countVolunteeringsPendingApproval');
 app()->get('/estado-voluntariado/{id_voluntariado}','VolunteeringsController@getStateVolunteering');
+app()->get('/restricciones-voluntariado/{id_voluntariado}','VolunteeringsController@getRestricionVolunteering');
+app()->post('/registro-voluntariado','VolunteeringsController@volunteerRegistration');
+app()->get('/voluntariados-registro-usuario/{id_voluntariado}','VolunteeringsController@userVolunteerRegistrations');
 
+app()->post('/usuario-registrado-voluntariado','VolunteeringsController@validateIfUserIsRegistered');
+
+
+
+
+
+/*REPORTS*/
 app()->get('/cantidad-publicaciones-pendientes-aprobacion','ReportsController@countPostPendingApproval');
+app()->get('/obtener-categoria-reportes','ReportsController@getReportCategories');
+
+

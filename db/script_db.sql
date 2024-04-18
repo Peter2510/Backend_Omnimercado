@@ -434,14 +434,22 @@ INSERT INTO estado_voluntariado(nombre,created_at,updated_at) VALUES
 ('Disponible','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Realizado','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Rechazado','2024-03-08 07:15:30','2024-03-08 07:15:30'),
-('Eliminado','2024-03-08 07:15:30','2024-03-08 07:15:30')
-('Finalizado','2024-03-08 07:15:30','2024-03-08 07:15:30');
+('Eliminado','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Finalizado','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Lleno','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
 INSERT INTO tipo_categoria_voluntariado(nombre,created_at,updated_at) values
 ('Salud','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Musica','2024-03-08 07:15:30','2024-03-08 07:15:30'),
 ('Educacion','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
+INSERT INTO categoria_reporte(nombre,created_at,updated_at) values
+('Contenido inapropiado','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Contenido falso','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Contenido violento','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Contenido sexual','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Contenido discriminativo','2024-03-08 07:15:30','2024-03-08 07:15:30'),
+('Contenido ilegal','2024-03-08 07:15:30','2024-03-08 07:15:30');
 
 DELIMITER //
 

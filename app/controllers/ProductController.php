@@ -573,10 +573,10 @@ class ProductController extends Controller
         }
     }
 
-    function aproveReports()
+    function aproveReports($id)
     {
         try {
-            $id = app()->request()->get('id_product');
+            
             $product = Product::findOrFail($id);
             $product->id_estado_producto = 4;
             $product->save();
@@ -593,10 +593,9 @@ class ProductController extends Controller
         }
     }
 
-    function rejectReports(){
+    function rejectReports($id){
         try {
-            $id = app()->request()->get('id_product');
-            
+                       
             //update table reporte_producto, set validado = 1
             ReportProduct::where('id_producto', $id)->update(['validado' => 1]);
             return response()->json(['status' => 'success', 'message' => 'Producto no invalidado'], 200);

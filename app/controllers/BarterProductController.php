@@ -7,6 +7,7 @@ use App\Models\BarterProduct;
 use App\Models\Restriction;
 use App\Models\BarterProductCategory;
 use App\Models\ImageBarterProduct;
+use App\Models\ReportBarter;
 use App\Models\User;
 use Leaf\FS;
 
@@ -434,5 +435,52 @@ class BarterProductController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error al obtener los intercambios con reportes activos'], 500);
         }
     }
+
+
+    function getReportsProductExchange($id)
+    {
+        try {
+            $reportes = ReportBarter::where('id_producto_trueque', $id)
+                ->join('categoria_reporte', 'reporte_producto_trueque.id_categoria_reporte', '=', 'categoria_reporte.id_categoria_reporte')
+                ->select('reporte_producto_trueque.*', 'categoria_reporte.nombre as nombre_categoria_reporte', 'reporte_producto_trueque.created_at as fecha_reporte')
+                ->get();
+            
+            return response()->json(['status' => 'success', 'reportes' => $reportes], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al obtener los reportes del producto'], 500);
+        }
+    }
+    
+    function approveReports($id)
+    {
+        try {
+            $producto = BarterProduct::findOrFail($id);
+            $producto->id_estado = 4; 
+            $producto->save();
+    
+            // Actualizar la tabla de reporte_producto_trueque, establecer validado = 1
+            ReportBarter::where('id_producto_trueque', $id)->update(['validado' => 1]);
+    
+            return response()->json(['status' => 'success', 'message' => 'Trueque invalidado'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Producto de trueque no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al aprobar el producto de trueque'], 500);
+        }
+    }
+    
+    function rejectReports($id)
+    {
+        try {
+            // Actualizar la tabla de reporte_producto_trueque, establecer validado = 1
+            ReportBarter::where('id_producto_trueque', $id)->update(['validado' => 1]);
+            return response()->json(['status' => 'success', 'message' => 'Trueque no invalidado'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Producto de trueque no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al no aprobar el producto de trueque'], 500);
+        }
+    }
+    
 
 }

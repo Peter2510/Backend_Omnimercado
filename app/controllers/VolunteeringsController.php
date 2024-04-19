@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\ImageVolunteering;
+use App\Models\ReportVolunteering;
 use App\Models\Volunteering;
 use App\Models\VolunteeringCategory;
 use App\Models\VolunteeringCategoryType;
@@ -586,6 +587,53 @@ class VolunteeringsController extends Controller
         return response()->json(['status' => 'error', 'message' => 'Error al obtener los voluntariados con reportes activos'], 500);
     }
 }
+
+
+function getReportsVolunteering($id)
+{
+    try {
+        $reportes = ReportVolunteering::where('id_voluntariado', $id)
+            ->join('categoria_reporte', 'reporte_voluntariado.id_categoria_reporte', '=', 'categoria_reporte.id_categoria_reporte')
+            ->select('reporte_voluntariado.*', 'categoria_reporte.nombre as nombre_categoria_reporte', 'reporte_voluntariado.created_at as fecha_reporte')
+            ->get();
+        
+        return response()->json(['status' => 'success', 'reportes' => $reportes], 200);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => 'Error al obtener los reportes del voluntariado'], 500);
+    }
+}
+
+function aproveReports($id)
+{
+    try {
+        $voluntariado = Volunteering::findOrFail($id);
+        $voluntariado->id_estado = 4;
+        $voluntariado->save();
+
+        
+        ReportVolunteering::where('id_voluntariado', $id)->update(['validado' => 1]);
+
+        return response()->json(['status' => 'success', 'message' => 'Voluntariado invalidado'], 200);
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        return response()->json(['status' => 'error', 'message' => 'Voluntariado no encontrado'], 404);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => 'Error al aprobar el voluntariado'], 500);
+    }
+}
+
+function rejectReports($id)
+{
+    try {       
+        ReportVolunteering::where('id_voluntariado', $id)->update(['validado' => 1]);
+        return response()->json(['status' => 'success', 'message' => 'Voluntariado no invalidado'], 200);
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        return response()->json(['status' => 'error', 'message' => 'Voluntariado no encontrado'], 404);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => 'Error al no aprobar el voluntariado'], 500);
+    }
+}
+
+
 
 
 }

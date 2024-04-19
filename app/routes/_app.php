@@ -50,13 +50,16 @@ app()->get('/obtener-compras-usuario/{user_id}','ProductController@getUserPurcha
 app()->get('/obtener-productos-con-reporte','ProductController@getProductsActiveReports');
 
 app()->get('/obtener-reportes-producto/{id_product}','ProductController@getReportsProduct');
-
 app()->patch('/aceptar-reportes-producto/{id_product}','ProductController@aproveReports');
 app()->patch('/rechazar-reportes-producto/{id_product}','ProductController@rejectReports');
 
+app()->get('/obtener-reportes-voluntariados/{id}','VolunteeringsController@getReportsVolunteering');
+app()->patch('/aceptar-reportes-voluntariado/{id}','VolunteeringsController@aproveReports');
+app()->patch('/rechazar-reportes-voluntariado/{id}','VolunteeringsController@rejectReports');
 
-
-
+app()->get('/obtener-reportes-intercambio/{id}','BarterProductController@getReportsProductExchange');
+app()->patch('/aceptar-reportes-intercambio/{id}','BarterProductController@aproveReports');
+app()->patch('/rechazar-reportes-intercambio/{id}','BarterProductController@rejectReports');
 
 
 
